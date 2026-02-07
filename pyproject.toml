@@ -12,7 +12,7 @@ dependencies = [
     "rich",
     "typer",
     "arrow",
-    "passlib[argon2]",
+    "pwdlib[argon2]",
     "pydantic",
 ]
 

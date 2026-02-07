@@ -9,7 +9,7 @@
 - `alembic`: Database migration tool for SQLAlchemy. -->
 - `arrow`: Library to manage datetimes easily.
 <!-- - `dependency-injector`: Library to use dependency injection using types signature. -->
-- `passlib`: Library to hash password, use Two Factor Authentication, encrypt and decrypt data.
+- `pwdlib`: Modern password hashing library (Argon2).
 - `python-jose[cryptography]`: Library to JavaScript Object Signing and Encryption (JOSE) = JWS + JWE + JWK + JWA + JWT
 - `aiohttp`: Async client for http
 

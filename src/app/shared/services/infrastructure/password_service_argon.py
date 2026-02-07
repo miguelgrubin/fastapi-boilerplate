@@ -1,11 +1,14 @@
-from passlib.hash import argon2
+from pwdlib import PasswordHash
 
 from app.shared.services.domain.password_service import PasswordService
 
 
 class PasswordServiceArgon(PasswordService):
+    def __init__(self) -> None:
+        self._password_hash = PasswordHash.recommended()
+
     def hash(self, password: str) -> str:
-        return argon2.hash(password)
+        return self._password_hash.hash(password)
 
     def check(self, password: str, password_hash: str) -> bool:
-        return argon2.verify(password, password_hash)
+        return self._password_hash.verify(password, password_hash)

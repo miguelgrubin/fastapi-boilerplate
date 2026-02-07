@@ -1,7 +1,3 @@
-.PHONY: install-pyenv
-install-pyenv:
-	curl https://pyenv.run | bash
-
 .PHONY: install-uv
 install-uv:
 	curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -34,19 +30,3 @@ lint:
 
 start:
 	PYTHONPATH=./src uv run uvicorn main:app --reload
-
-.PHONY: migration-generate
-migration-generate:
-	@echo "To be implemented"
-
-.PHONY: migration-run
-migration-run:
-	@echo "To be implemented"
-
-.PHONY: migration-revert
-migration-revert:
-	@echo "To be implemented"
-
-.PHONY: seed
-seed:
-	@echo "To be implemented"

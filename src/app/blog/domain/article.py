@@ -1,4 +1,4 @@
-""" User Domain """
+"""User Domain"""
 
 from datetime import datetime
 

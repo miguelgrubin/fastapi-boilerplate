@@ -2,42 +2,38 @@
 install-pyenv:
 	curl https://pyenv.run | bash
 
-.PHONY: install-pipenv
-install-pipenv:
-	pip install --user pipenv
+.PHONY: install-uv
+install-uv:
+	curl -LsSf https://astral.sh/uv/install.sh | sh
 
 .PHONY: install
 install:
-	pipenv install --dev
-
-.PHONY: audit
-audit:
-	pipenv check
+	uv sync --all-extras
 
 .PHONY: typecheck
 typecheck:
-	pipenv run mypy src
+	uv run mypy src
 
 .PHONY: format-check
 format-check:
-	pipenv run black --config pyproject.toml --diff --check ./
-	pipenv run isort --settings-path pyproject.toml --check-only **/*.py
+	uv run ruff format --check .
+	uv run ruff check --select I .
 
 .PHONY: format
 format:
-	pipenv run isort --settings-path pyproject.toml **/*.py
-	pipenv run black --config pyproject.toml ./
+	uv run ruff check --select I --fix .
+	uv run ruff format .
 
 .PHONY: test
 test:
-	pipenv run pytest tests
+	uv run pytest tests
 
 .PHONY: lint
 lint:
-	PYTHONPATH=./src pylint ./src
+	PYTHONPATH=./src uv run pylint ./src
 
 start:
-	PYTHONPATH=./src uvicorn  main:app --reload
+	PYTHONPATH=./src uv run uvicorn main:app --reload
 
 .PHONY: migration-generate
 migration-generate:

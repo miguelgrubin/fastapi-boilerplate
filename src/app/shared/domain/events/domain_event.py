@@ -1,5 +1,6 @@
 import uuid
 from abc import ABC
+
 from app.shared.domain.events.event_types import EventType
 
 

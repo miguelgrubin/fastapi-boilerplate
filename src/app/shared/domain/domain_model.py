@@ -1,4 +1,5 @@
 from typing import List
+
 from dataclasses import dataclass, field
 
 from app.shared.domain.events.domain_event import DomainEvent

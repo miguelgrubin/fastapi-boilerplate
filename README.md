@@ -27,7 +27,7 @@
 
 <!-- - `pyenv`: Python version manager. Similar to `nvm` on NodeJS and `rbenv` on Ruby. -->
 
-- `pipenv`: Manage dependencies, security vulnerabilities via `safety` and creates virtual environments. Similar to `npm` on NodeJS.
+- `uv`: Fast Python package installer and resolver. Manages dependencies and virtual environments. Similar to `npm` on NodeJS but significantly faster.
 
 ### Documentation
 
@@ -42,8 +42,7 @@
 
 ### Formatters
 
-- `isort`: Apply format and order to imports described on [PEP8](https://www.python.org/dev/peps/pep-0008/#imports)
-- `black`: Apply deterministic format, similar to `pycodestyle` but faster and simpler.
+- `ruff`: Extremely fast Python linter and formatter. Replaces black and isort with 10-100x better performance.
 
 <!-- ### Security Linters
 

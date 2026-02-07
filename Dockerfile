@@ -1,10 +1,10 @@
 FROM python:3.11
 
-COPY pyproject.toml ./
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-RUN pip install pipenv
-RUN pipenv install --dev
+COPY pyproject.toml uv.lock ./
 
+RUN uv sync --frozen --all-extras
 
-CMD mkdir -p /workspace
+RUN mkdir -p /workspace
 WORKDIR /workspace

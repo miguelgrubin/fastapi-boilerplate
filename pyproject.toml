@@ -1,24 +1,61 @@
+[project]
+name = "fastapi-boilerplate"
+version = "1.0.0"
+description = "A boilerplate using FastAPI and hexagonal architecture."
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "uvicorn[standard]",
+    "fastapi[all]",
+    "alembic",
+    "sqlalchemy",
+    "rich",
+    "typer",
+    "arrow",
+    "passlib[argon2]",
+    "pydantic",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy",
+    "pylint",
+    "ruff",
+    "pytest",
+    "faker",
+    "pytest-asyncio",
+    "freezegun",
+    "sqlalchemy-stubs",
+]
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.black]
-# https://github.com/psf/black
+[tool.ruff]
+# https://docs.astral.sh/ruff/
 line-length = 100
-target-version = ["py311"]
+target-version = "py311"
+src = ["src", "tests"]
 
-[tool.isort]
-# https://github.com/timothycrosley/isort/
-src_paths = ["src", "tests"]
-known_typing = "typing,types,typing_extensions,mypy,mypy_extensions"
-sections = "FUTURE,TYPING,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
-include_trailing_comma = true
-default_section = "FIRSTPARTY"
-multi_line_output = 3
-indent = 4
-force_grid_wrap = 0
-use_parentheses = true
-line_length = 100
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+section-order = ["future", "typing", "standard-library", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+"typing" = ["typing", "types", "typing_extensions", "mypy", "mypy_extensions"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.mypy]
 # https://github.com/python/mypy

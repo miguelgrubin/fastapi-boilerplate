@@ -1,6 +1,6 @@
 from app.blog.domain.errors.username_aready_exits import UserAlreadyExits
-from app.blog.domain.user_repository import UserRepository
 from app.blog.domain.user import User
+from app.blog.domain.user_repository import UserRepository
 from app.shared.services.domain.password_service import PasswordService
 
 

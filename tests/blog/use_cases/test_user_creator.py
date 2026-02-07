@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+
 from app.blog.domain.errors.username_aready_exits import UserAlreadyExits
 from app.blog.infrastructure.storage.user_repository_memory import UserRepositoryMemory
 from app.blog.use_cases.user_creator import UserCreator

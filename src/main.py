@@ -1,5 +1,6 @@
-from app.blog.factory import create_blog
 from fastapi import FastAPI
+
+from app.blog.factory import create_blog
 
 app = FastAPI()
 

@@ -1,6 +1,6 @@
-from app.shared.services.domain.password_service import PasswordService
-
 from passlib.hash import argon2
+
+from app.shared.services.domain.password_service import PasswordService
 
 
 class PasswordServiceArgon(PasswordService):

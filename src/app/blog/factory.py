@@ -1,18 +1,19 @@
 from fastapi import FastAPI
+
 from app.blog import (
     ARTICLE_REPOSITORY,
-    USER_REPOSITORY,
     USER_CREATOR,
+    USER_REPOSITORY,
 )
+from app.blog.infrastructure.server.user_routes import user_routes
+from app.blog.infrastructure.storage.article_repository_memory import ArticleRepositoryMemory
+from app.blog.infrastructure.storage.user_repository_memory import UserRepositoryMemory
 from app.blog.types import (
     RepositoriesType,
     ServicesType,
     UseCasesType,
 )
-from app.blog.infrastructure.server.user_routes import user_routes
 from app.blog.use_cases.user_creator import UserCreator
-from app.blog.infrastructure.storage.user_repository_memory import UserRepositoryMemory
-from app.blog.infrastructure.storage.article_repository_memory import ArticleRepositoryMemory
 from app.shared import PASSWORD_SERVICE
 from app.shared.services.factories import create_password_service
 

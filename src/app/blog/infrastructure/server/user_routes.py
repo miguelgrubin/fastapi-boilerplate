@@ -2,8 +2,8 @@ from fastapi import FastAPI
 
 from app.blog import USER_CREATOR
 from app.blog.infrastructure.mappers.user_mapper import UserMapper
-from app.blog.types import UseCasesType
 from app.blog.infrastructure.server.user_dtos import UserCreationDTO, UserResponse
+from app.blog.types import UseCasesType
 from app.blog.use_cases.user_creator import UserCreator
 
 

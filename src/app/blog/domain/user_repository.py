@@ -1,4 +1,5 @@
 from typing import List, NoReturn, Optional
+
 from abc import ABC, abstractmethod
 
 from src.app.blog.domain.user import User

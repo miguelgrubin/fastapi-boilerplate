@@ -34,9 +34,9 @@
 - `mkdocs`: Generates HTML help pages from markdowns stored on `docs`.
 - `mkdocs-material`: Material theme for `mkdocs`.
 
-### Linters
+### Type Checkers
 
-- `mypy`: Checks types integrity.
+- `ty`: Extremely fast Python type checker written in Rust. 10-100x faster than mypy with modern features like LSP support and advanced type narrowing.
 - `pylint`: Checks code style to enforce PEP8, avoid code smells and suggest refactors.
 <!-- - `radon`: Checks mantainability and cyclomatic complexity. -->
 

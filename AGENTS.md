@@ -20,6 +20,23 @@ make install          # Install all dependencies (uv sync --all-extras)
 make install-uv       # Install uv package manager
 ```
 
+### Type Checking
+
+ty is a fast, Rust-based type checker that replaces mypy. Key features:
+- **10-100x faster** than mypy with excellent performance
+- **Language server support** for IDE integration
+- **Modern diagnostics** with comprehensive error messages
+- **Configuration**: `[tool.ty]` in `pyproject.toml`
+
+```bash
+make typecheck        # Run ty type checker on src
+uv run ty check src   # Run ty type checker (direct)
+uv run ty check .     # Type check entire project
+uv run ty check --watch  # Watch mode for development
+```
+
+For more information, see [ty documentation](https://docs.astral.sh/ty/).
+
 ### Testing
 
 ```bash
@@ -37,7 +54,6 @@ uv run pytest tests --tb=short         # Shorter tracebacks
 ```bash
 make format           # Auto-format code with ruff
 make format-check     # Check formatting without modifying
-make typecheck        # Run mypy type checker
 make lint             # Run pylint
 uv run ruff check .   # Run ruff linter
 uv run ruff check --fix .  # Auto-fix ruff issues
@@ -103,7 +119,7 @@ from app.blog.domain.user import User
 
 ### Type Annotations
 
-- **All functions must have return type annotations** (enforced by mypy)
+- **All functions must have return type annotations** (enforced by ty)
 - Use `Optional[T]` for nullable types
 - Use `List[T]`, `Dict[K, V]` from `typing` module
 - Use `TypedDict` for structured dictionaries

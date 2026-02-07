@@ -8,7 +8,7 @@ install:
 
 .PHONY: typecheck
 typecheck:
-	uv run mypy src
+	uv run ty check src
 
 .PHONY: format-check
 format-check:

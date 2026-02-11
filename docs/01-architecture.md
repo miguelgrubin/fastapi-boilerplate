@@ -1,4 +1,4 @@
-# Introduction
+# Architecture
 
 **What?**
 

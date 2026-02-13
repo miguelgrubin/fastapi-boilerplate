@@ -1,0 +1,154 @@
+---
+# Authelia Configuration
+# https://www.authelia.com/configuration/prologue/introduction/
+
+# Theme: light, dark, grey, auto
+theme: auto
+
+# JWT Secret for password reset tokens (set via environment variable)
+# identity_validation:
+#   reset_password:
+#     jwt_secret: set via AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET
+
+# Server configuration
+server:
+  address: "tcp://0.0.0.0:9091"
+  # Path prefix - Authelia will be served at /auth/
+  asset_path: ""
+  buffers:
+    read: 4096
+    write: 4096
+  endpoints:
+    authz:
+      forward-auth:
+        implementation: ForwardAuth
+
+# Logging
+log:
+  level: info
+  format: text
+  # level: debug  # Uncomment for troubleshooting
+
+# TOTP (Time-based One-Time Password) configuration
+totp:
+  disable: false
+  issuer: authelia.com
+  algorithm: sha1
+  digits: 6
+  period: 30
+  skew: 1
+  secret_size: 32
+
+# WebAuthn configuration
+webauthn:
+  disable: false
+  timeout: 60s
+  display_name: Authelia
+  attestation_conveyance_preference: indirect
+  user_verification: preferred
+
+# Duo Push Notification (disabled by default)
+# duo_api:
+#   disable: true
+
+# Authentication backend - File-based
+authentication_backend:
+  password_reset:
+    disable: false
+  file:
+    path: /config/users_database.yml
+    watch: true
+    search:
+      email: false
+      case_insensitive: false
+    password:
+      algorithm: argon2id
+      argon2:
+        variant: argon2id
+        iterations: 3
+        memory: 65536
+        parallelism: 4
+        key_length: 32
+        salt_length: 16
+
+# Access Control - Define which resources require authentication
+# With path-based routing, we use localhost domain with resource paths
+access_control:
+  default_policy: deny
+  rules:
+    # Authelia portal - bypass (no auth required)
+    - domain: "localhost"
+      resources:
+        - "^/auth(/.*)?$"
+      policy: bypass
+
+    # Public API endpoints (add your public paths here)
+    - domain: "localhost"
+      resources:
+        - "^/api/docs.*$"
+        - "^/api/redoc.*$"
+        - "^/api/openapi.json$"
+        - "^/api/health.*$"
+      policy: bypass
+
+    # API - require one-factor authentication
+    - domain: "localhost"
+      resources:
+        - "^/api(/.*)?$"
+      policy: one_factor
+
+# Session configuration
+session:
+  name: authelia_session
+  same_site: lax
+  inactivity: 5m
+  expiration: 1h
+  remember_me: 1M
+  cookies:
+    - domain: localhost
+      authelia_url: http://localhost:1080/auth
+      default_redirection_url: http://localhost:1080/api
+      name: authelia_session
+      same_site: lax
+      inactivity: 5m
+      expiration: 1h
+      remember_me: 1M
+  # Redis session storage
+  redis:
+    host: redis
+    port: 6379
+    database_index: 0
+
+# Regulation - Brute force protection
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 5m
+
+# Storage - SQLite for local development
+storage:
+  # encryption_key: set via AUTHELIA_STORAGE_ENCRYPTION_KEY
+  local:
+    path: /data/db.sqlite3
+
+# Notifier - File-based for local development
+# Emails are written to a file instead of being sent
+notifier:
+  disable_startup_check: false
+  filesystem:
+    filename: /data/notification.txt
+
+# For production, use SMTP:
+# notifier:
+#   smtp:
+#     address: smtp://mail.example.com:587
+#     username: authelia@example.com
+#     password: your-smtp-password
+#     sender: "Authelia <authelia@example.com>"
+#     subject: "[Authelia] {title}"
+#     startup_check_address: test@authelia.com
+#     disable_require_tls: false
+#     disable_starttls: false
+#     tls:
+#       skip_verify: false
+...

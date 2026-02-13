@@ -1,3 +1,80 @@
+## Docker Development
+
+Run the full stack with Nginx Proxy Manager, Authelia, PostgreSQL (pgvector), and Redis:
+
+```bash
+# Start all services
+docker compose --env-file .env.docker up -d
+
+# View logs
+docker compose --env-file .env.docker logs -f
+
+# Stop services
+docker compose --env-file .env.docker down
+
+# Clean up (removes volumes)
+docker compose --env-file .env.docker down -v
+```
+
+### Initial Setup
+
+1. **Start the stack:**
+   ```bash
+   docker compose --env-file .env.docker up -d
+   ```
+
+2. **Access Nginx Proxy Manager Admin UI:**
+   - URL: http://localhost:81
+   - Default login: `admin@example.com` / `changeme`
+   - You'll be prompted to change credentials on first login
+
+3. **Configure Proxy Host in NPM:**
+
+   Create a single proxy host for `localhost` with path-based routing:
+
+   - **Details tab:**
+     - Domain Names: `localhost`
+     - Scheme: `http`
+     - Forward Hostname/IP: `127.0.0.1` (placeholder, actual routing is in Advanced)
+     - Forward Port: `80` (placeholder)
+     - Enable "Block Common Exploits"
+
+   - **Advanced tab:**
+     - Copy and paste the entire contents of `docker/nginx-proxy-manager/path-routing.conf`
+
+   This configures:
+   - `/auth/*` → Authelia portal
+   - `/api/*` → FastAPI (protected by Authelia, prefix stripped)
+   - `/` → Redirects to `/api/docs`
+
+### Access URLs
+
+| Service | URL | Notes |
+|---------|-----|-------|
+| NPM Admin | http://localhost:81 | Configure proxy hosts here |
+| Authelia | http://localhost/auth | Login portal |
+| FastAPI | http://localhost/api | Protected API (redirects to /api/docs) |
+| API Docs | http://localhost/api/docs | OpenAPI documentation |
+| PostgreSQL | localhost:5432 | Direct database access |
+
+**Authelia credentials:** admin / password
+
+### How It Works
+
+All routing is handled via path prefixes on a single `localhost` domain:
+
+1. **Authelia Portal (`/auth`)**: Serves the authentication UI
+2. **FastAPI API (`/api`)**: Protected by Authelia - unauthenticated requests redirect to `/auth`
+3. **Public endpoints**: `/api/docs`, `/api/redoc`, `/api/openapi.json`, `/api/health` bypass authentication
+
+The Nginx configuration in `docker/nginx-proxy-manager/path-routing.conf`:
+- Routes requests based on path prefix
+- Strips `/api` prefix before forwarding to FastAPI
+- Handles Authelia forward-auth verification
+- Passes authenticated user info to FastAPI via headers (`Remote-User`, `Remote-Email`, etc.)
+
+---
+
 ## Main Dependencies
 
 - `uvicorn`: Asynchronous web server interface, similar to `rack` on Ruby.

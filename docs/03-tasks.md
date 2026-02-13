@@ -4,24 +4,23 @@ This document tracks planned improvements and missing implementations for the pr
 
 ## High Priority
 
-| Task                                | Description                                                                                                                                      |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Add `user_error_handlers.py`        | Implement error handlers to transform domain errors into HTTP errors (status code, error message). Currently error handling is inline in routes. |
+- [ ] Implement error handlers to transform domain errors into HTTP errors (status code, error message).
+- [ ] Implement Authentication and Authorization using OpenID with Authelia and Traefik.
 
 ## Medium Priority
 
-| Task                          | Description                                                                                                |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Add shared domain errors      | Create a shared domain errors directory for base error classes that can be reused across bounded contexts. |
-| Add article mappers           | Create mapper for Article entity similar to user_mapper.py.                                                |
+- [ ] Create Articles use case and related repository implementations.
+- [ ] Use SQLAlchemy and Alembic for database interactions and migrations.
+- [ ] Create SQL repository implementations for User and Article.
+- [ ] Create MCP Server with FastMCP
+
 
 ## Low Priority
 
-| Task                      | Description                                                                                                                                       |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Add Guards implementation | Implement authentication/authorization guards as mentioned in docs (checking if user is authenticated, has permissions, etc.).                    |
-| Add External Services     | Implement external service integrations (email, payment, etc.) with abstract interfaces in domain and concrete implementations in infrastructure. |
-| Add Application Services  | Implement application services for complex logic that spans multiple use cases.                                                                   |
+- [ ] Implement OpenTelemetry for tracing and monitoring.
+- [ ] Implement LGTM stack
+- [ ] Define rules for agents
+- [ ] Create agents to generate components
 
 ## Completed
 

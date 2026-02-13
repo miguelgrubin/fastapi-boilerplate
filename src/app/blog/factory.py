@@ -3,9 +3,10 @@ from fastapi import FastAPI
 from app.blog import (
     ARTICLE_REPOSITORY,
     USER_CREATOR,
+    USER_DELETER,
     USER_REPOSITORY,
 )
-from app.blog.infrastructure.server.user_routes import user_routes
+from app.blog.infrastructure.server.router import blog_routes
 from app.blog.infrastructure.storage.article_repository_memory import ArticleRepositoryMemory
 from app.blog.infrastructure.storage.user_repository_memory import UserRepositoryMemory
 from app.blog.types import (
@@ -14,6 +15,7 @@ from app.blog.types import (
     UseCasesType,
 )
 from app.blog.use_cases.user_creator import UserCreator
+from app.blog.use_cases.user_deleter import UserDeleter
 from app.shared import PASSWORD_SERVICE
 from app.shared.services.factories import create_password_service
 
@@ -34,19 +36,20 @@ def create_use_cases(repositories: RepositoriesType, services: ServicesType) -> 
         USER_CREATOR: UserCreator(
             user_repository=repositories.get(USER_REPOSITORY),
             password_service=services.get(PASSWORD_SERVICE),
-        )
+        ),
+        USER_DELETER: UserDeleter(
+            user_repository=repositories.get(USER_REPOSITORY),
+        ),
     }
 
 
-def create_server(use_cases: UseCasesType) -> FastAPI:
-    blog_app = FastAPI()
-    user_routes(blog_app, use_cases)
-    return blog_app
+def create_blog_http_server(app: FastAPI):
+    _, __, use_cases = create_blog_module()
+    blog_routes(app, use_cases)
 
 
-def create_blog() -> FastAPI:
+def create_blog_module():
     services = create_services()
     repositories = create_repositories()
     use_cases = create_use_cases(repositories, services)
-    server = create_server(use_cases)
-    return server
+    return services, repositories, use_cases

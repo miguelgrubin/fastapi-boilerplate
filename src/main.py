@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.blog.factory import create_blog
+from app.blog.factory import create_blog_http_server
 
 app = FastAPI()
 
@@ -10,5 +10,4 @@ def checkhealth():
     return {"ping": "pong"}
 
 
-blog_app = create_blog()
-app.mount("/v1", blog_app)
+blog_app = create_blog_http_server(app)

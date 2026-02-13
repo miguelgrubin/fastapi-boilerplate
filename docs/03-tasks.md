@@ -6,6 +6,8 @@ This document tracks planned improvements and missing implementations for the pr
 
 - [ ] Implement error handlers to transform domain errors into HTTP errors (status code, error message).
 - [ ] Implement Authentication and Authorization using OpenID with Authelia and Traefik.
+- [ ] Create App Config
+- [ ] Use App Factory to create MCP Server, HTTP Server and cli commands.
 
 ## Medium Priority
 

@@ -1,11 +1,10 @@
 from unittest.mock import patch
 
 import pytest
-
-from app.blog.domain.errors.username_aready_exits import UserAlreadyExits
-from app.blog.infrastructure.storage.user_repository_memory import UserRepositoryMemory
-from app.blog.use_cases.user_creator import UserCreator
-from app.shared.services.infrastructure.password_service_fake import PasswordServiceFake
+from src.blog.domain.errors.username_aready_exists import UserAlreadyExists
+from src.blog.infrastructure.storage.user_repository_memory import UserRepositoryMemory
+from src.blog.use_cases.user_creator import UserCreator
+from src.shared.infrastructure.services.password_service_fake import PasswordServiceFake
 
 
 def _create_new_use_case():
@@ -24,14 +23,14 @@ def test_should_create_user_when_email_and_username_is_not_used():
 def test_should_raise_error_when_email_already_exists():
     use_case = _create_new_use_case()
     use_case.execute("someone", "S3CUR€ PA$$", "someone@example.com")
-    with pytest.raises(UserAlreadyExits):
+    with pytest.raises(UserAlreadyExists):
         use_case.execute("second_one", "S3CUR€ PA$$", "someone@example.com")
 
 
 def test_should_raise_error_when_username_already_exists():
     use_case = _create_new_use_case()
     use_case.execute("someone", "S3CUR€ PA$$", "someone@example.com")
-    with pytest.raises(UserAlreadyExits):
+    with pytest.raises(UserAlreadyExists):
         use_case.execute("someone", "S3CUR€ PA$$", "aaaa@example.com")
 
 

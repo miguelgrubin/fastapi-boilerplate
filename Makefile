@@ -29,4 +29,12 @@ lint:
 	PYTHONPATH=./src uv run pylint ./src
 
 start:
-	PYTHONPATH=./src uv run uvicorn main:app --reload
+	uv run python main.py http-server
+
+.PHONY: clean
+clean:
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete
+	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true

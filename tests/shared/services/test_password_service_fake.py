@@ -1,16 +1,16 @@
-from app.shared.services import factories
+from src.shared.factory import create_password_service
 
 
 def test_should_hash():
-    service = factories.create_password_service("fake")
+    service = create_password_service("fake")
     password = "lalala2"
 
     assert service.hash(password) == password
 
 
 def test_should_check():
-    service = factories.create_password_service("fake")
+    service = create_password_service("fake")
     password = "lalala2"
     hash = service.hash(password)
 
-    assert service.check(hash, password) == True
+    assert service.check(hash, password) is True

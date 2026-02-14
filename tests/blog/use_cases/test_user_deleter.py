@@ -1,12 +1,11 @@
 from unittest.mock import patch
 
 import pytest
-
-from app.blog.domain.errors.user_not_found import UserNotFound
-from app.blog.infrastructure.storage.user_repository_memory import UserRepositoryMemory
-from app.blog.use_cases.user_creator import UserCreator
-from app.blog.use_cases.user_deleter import UserDeleter
-from app.shared.services.infrastructure.password_service_fake import PasswordServiceFake
+from src.blog.domain.errors.user_not_found import UserNotFound
+from src.blog.infrastructure.storage.user_repository_memory import UserRepositoryMemory
+from src.blog.use_cases.user_creator import UserCreator
+from src.blog.use_cases.user_deleter import UserDeleter
+from src.shared.infrastructure.services.password_service_fake import PasswordServiceFake
 
 
 def _create_repository():

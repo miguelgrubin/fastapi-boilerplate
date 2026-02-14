@@ -10,7 +10,7 @@ class UserCreator(UseCase):
         self.user_repository = user_repository
         self.password_service = password_service
 
-    def execute(self, username: str, password: str, email: str):
+    def execute(self, username: str, password: str, email: str) -> User:
         recorded = self.user_repository.find_one_by_email(email)
         if recorded:
             raise UserAlreadyExists("Email already exists.")

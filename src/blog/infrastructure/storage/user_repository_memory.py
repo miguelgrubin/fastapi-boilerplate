@@ -29,5 +29,5 @@ class UserRepositoryMemory(UserRepository):
         filtered_users = copy(self._users)
         return filtered_users
 
-    def clear(self):
+    def clear(self) -> None:
         self._users = []

@@ -32,40 +32,44 @@ class User(DomainModel):
     email: str
     username: str
     password_hash: str
-    profile: Profile
+    profile: Profile = field(default_factory=Profile)
     following: List[str] = field(default_factory=list)
     followers: List[str] = field(default_factory=list)
     updated_at: datetime
     created_at: datetime
 
     @classmethod
-    def create(cls, username: str, password: str, email: str):
+    def create(cls, username: str, password: str, email: str) -> "User":
         """Creates a new User."""
-        user = User()
-        user.id = str(uuid4())
-        user.email = email
-        user.username = username
-        user.password_hash = password
-        user.profile = Profile()
-        user.updated_at = datetime.now()
-        user.created_at = datetime.now()
+        id = str(uuid4())
+        now = datetime.now()
 
-        user.record(UserCreated())
+        user = cls(
+            id=id,
+            email=email,
+            username=username,
+            password_hash=password,
+            profile=Profile(),
+            created_at=now,
+            updated_at=now,
+        )
+        user.record(UserCreated(user.id))
+
         return user
 
-    def update_profile(self, payload: UserUpdateParams):
+    def update_profile(self, payload: UserUpdateParams) -> None:
         """Updates email and profile info."""
         self.profile.bio = payload.get("bio", self.profile.bio)
         self.profile.image = payload.get("image", self.profile.image)
         self.updated_at = datetime.now()
-        self.record(UserUpdated(payload))
+        self.record(UserUpdated(self.id, payload))
 
-    def follow(self, user_id: str):
+    def follow(self, user_id: str) -> None:
         self.following.append(user_id)
-        self.record(UserFollowed(user_id))
+        self.record(UserFollowed(self.id, user_id))
 
-    def unfollow(self, user_id: str):
+    def unfollow(self, user_id: str) -> None:
         if user_id not in self.following:
             raise UserNotFollowing(user_id)
         self.following.remove(user_id)
-        self.record(UserUnfollowed(user_id))
+        self.record(UserUnfollowed(self.id, user_id))

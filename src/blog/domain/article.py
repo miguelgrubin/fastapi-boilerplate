@@ -1,6 +1,7 @@
 """Article Domain"""
 
 from datetime import datetime
+from uuid import uuid4
 
 from src.blog.domain.events.article_created import ArticleCreated
 from src.blog.domain.events.article_published import ArticlePublished
@@ -25,7 +26,6 @@ class Article(DomainModel):
     @classmethod
     def create(
         cls,
-        id: str,
         title: str,
         description: str,
         content: str,
@@ -33,6 +33,7 @@ class Article(DomainModel):
         author_id: str,
     ) -> "Article":
         """Factory method to create a new article."""
+        id = str(uuid4())
         now = datetime.now()
         article = cls(
             id=id,

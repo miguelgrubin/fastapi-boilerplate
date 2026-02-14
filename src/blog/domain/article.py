@@ -2,6 +2,10 @@
 
 from datetime import datetime
 
+from src.blog.domain.events.article_created import ArticleCreated
+from src.blog.domain.events.article_published import ArticlePublished
+from src.blog.domain.events.article_unpublished import ArticleUnpublished
+from src.blog.domain.events.article_updated import ArticleUpdated
 from src.shared.domain.domain_model import DomainModel
 
 
@@ -30,7 +34,7 @@ class Article(DomainModel):
     ) -> "Article":
         """Factory method to create a new article."""
         now = datetime.now()
-        return cls(
+        article = cls(
             id=id,
             title=title,
             description=description,
@@ -41,6 +45,8 @@ class Article(DomainModel):
             updated_at=now,
             published=False,
         )
+        article.record(ArticleCreated(id))
+        return article
 
     def update(
         self,
@@ -59,13 +65,16 @@ class Article(DomainModel):
         if slug is not None:
             self.slug = slug
         self.updated_at = datetime.now()
+        self.record(ArticleUpdated(self.id))
 
     def publish(self) -> None:
         """Publish the article."""
         self.published = True
         self.updated_at = datetime.now()
+        self.record(ArticlePublished(self.id))
 
     def unpublish(self) -> None:
         """Unpublish the article."""
         self.published = False
         self.updated_at = datetime.now()
+        self.record(ArticleUnpublished(self.id))

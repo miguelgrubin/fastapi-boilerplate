@@ -1,4 +1,4 @@
-from typing import List, NoReturn, Optional
+from typing import List, Optional
 
 from copy import copy
 
@@ -9,11 +9,10 @@ from src.blog.domain.user_repository import UserRepository
 class UserRepositoryMemory(UserRepository):
     _users: List[User] = []
 
-    def save(self, user: User) -> User:
+    def save(self, user: User) -> None:
         self._users.append(user)
-        return user
 
-    def delete(self, user_id: str) -> NoReturn:
+    def delete(self, user_id: str) -> None:
         if user := self.find_one(user_id):
             self._users.remove(user)
 

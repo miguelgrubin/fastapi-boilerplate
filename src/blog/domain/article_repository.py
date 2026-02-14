@@ -1,4 +1,4 @@
-from typing import List, NoReturn, Optional
+from typing import List, Optional
 
 from abc import ABC, abstractmethod
 
@@ -11,11 +11,11 @@ class ArticleRepository(ABC):
     """docstring for ArticleRepository"""
 
     @abstractmethod
-    def save(self, article: Article) -> Article:
+    def save(self, article: Article) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def delete(self, article_id: str) -> NoReturn:
+    def delete(self, article_id: str) -> None:
         raise NotImplementedError
 
     @abstractmethod

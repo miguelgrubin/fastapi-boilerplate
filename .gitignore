@@ -35,3 +35,13 @@ venv
 .AppleDouble
 .LSOverride
 ._*
+
+# Environment files
+.env
+.env.docker
+!.env.example
+
+# Docker
+docker/traefik/certs/*.crt
+docker/traefik/certs/*.key
+docker/traefik/certs/*.pem

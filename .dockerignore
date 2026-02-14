@@ -1,4 +1,5 @@
 *
+!main.py
 !src
 !pyproject.toml
 !uv.lock

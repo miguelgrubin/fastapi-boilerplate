@@ -114,7 +114,7 @@ from datetime import datetime
 
 from fastapi import FastAPI
 
-from app.blog.domain.user import User
+from src.blog.domain.user import User
 ```
 
 ### Type Annotations
@@ -143,9 +143,9 @@ from app.blog.domain.user import User
 - Include descriptive messages
 
 ```python
-class UserAlreadyExits(Exception):
+class UserAlreadyExists(Exception):
     def __init__(self):
-        super().__init__("User with this username or email already exits.")
+        super().__init__("User with this username or email already exists.")
 ```
 
 ### Domain Models

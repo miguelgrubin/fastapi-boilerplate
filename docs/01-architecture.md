@@ -33,7 +33,7 @@ src
 │   │   ├── domain
 │   │   │   ├── article.py                      <=  Article Domain Model
 │   │   │   ├── article_repository.py           <=  Article Abstract Repository
-│   │   │   ├── errors/                         <=  Blog Domain Errors (UserNotFound, UserAlreadyExits, ...)
+│   │   │   ├── errors/                         <=  Blog Domain Errors (UserNotFound, UserAlreadyExists, ...)
 │   │   │   ├── events/                         <=  Blog Domain Events (ArticleCreated, UserFollowed, ...)
 │   │   │   ├── user.py                         <=  User Domain Model
 │   │   │   └── user_repository.py              <=  User Abstract Repository
@@ -102,7 +102,7 @@ They are responsible to interact with external services (email, payment, ...). T
 
 - **Domain Models**: They are the main component of the Domain Layer. They represent the main entities of the application (User, Article, ...). They contain the business rules and logic of the application. They should be tested with Solitary Unit Testing (single class or function) to ensure that the business rules are correctly implemented. ToDo: Explain why.
 - **Abstract Repositories**: They are interfaces that define the methods to persist and retrieve data from the database. They are implemented by the Storage components of the Infrastructure Layer.
-- **Domain Errors**: They are custom exceptions that represent the errors that can occur in the Domain Layer (UserNotFound, UserAlreadyExits, ...). They are used to handle errors in the Use Cases and to transform them into HTTP Errors in the Error Handlers of the Server.
+- **Domain Errors**: They are custom exceptions that represent the errors that can occur in the Domain Layer (UserNotFound, UserAlreadyExists, ...). They are used to handle errors in the Use Cases and to transform them into HTTP Errors in the Error Handlers of the Server.
 - **Domain Events**: They are events that represent something that has happened in the Domain Layer (ArticleCreated, UserFollowed, ...). They can be used to trigger actions in the application (send an email when a user is created, ...). Base classes are defined in `shared/domain/events/`.
 - **Event Types**: They are an Enum with all the event types of the Domain Layer (`shared/domain/events/event_types.py`). They can be used to identify the type of an event when we want to trigger actions in the application.
 - **Domain Services**: They are services that contain business logic that doesn't belong to any specific Domain Model. They can be used to implement complex business rules that involve multiple Domain Models. ToDo: Not implemented yet.

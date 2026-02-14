@@ -1,0 +1,161 @@
+---
+# FastAPI Boilerplate with Authelia + Traefik + PostgreSQL + Redis
+# Usage: docker compose --env-file .env.docker up -d
+# Access:
+#   - http://localhost:1081      - Traefik Dashboard
+#   - http://localhost:1080/auth - Authelia portal
+#   - http://localhost:1080/api  - FastAPI app
+
+networks:
+  proxy:
+    name: proxy
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  authelia_data:
+
+services:
+  # =============================================================================
+  # Traefik - Reverse Proxy
+  # =============================================================================
+  traefik:
+    image: traefik:v3.2
+    container_name: fastapi-traefik
+    restart: unless-stopped
+    networks:
+      - proxy
+    ports:
+      - "1080:80"
+      - "10443:443"
+      - "1081:8080"  # Dashboard
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      # Root redirect to /api/docs
+      - "traefik.enable=true"
+      - "traefik.http.routers.root.rule=Path(`/`)"
+      - "traefik.http.routers.root.entrypoints=web"
+      - "traefik.http.routers.root.middlewares=redirect-to-docs"
+      - "traefik.http.routers.root.service=noop@internal"
+      - "traefik.http.middlewares.redirect-to-docs.redirectregex.regex=^http://([^/]+)/?$$"
+      - "traefik.http.middlewares.redirect-to-docs.redirectregex.replacement=http://$${1}/api/docs"
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =============================================================================
+  # Authelia - Authentication Portal
+  # =============================================================================
+  authelia:
+    image: authelia/authelia:latest
+    container_name: fastapi-authelia
+    restart: unless-stopped
+    networks:
+      - proxy
+    expose:
+      - 9091
+    volumes:
+      - ./docker/authelia:/config:ro
+      - authelia_data:/data
+    environment:
+      TZ: "UTC"
+      AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET: ${AUTHELIA_JWT_SECRET}
+      AUTHELIA_SESSION_SECRET: ${AUTHELIA_SESSION_SECRET}
+      AUTHELIA_STORAGE_ENCRYPTION_KEY: ${AUTHELIA_STORAGE_ENCRYPTION_KEY}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.authelia.rule=PathPrefix(`/auth`)"
+      - "traefik.http.routers.authelia.entrypoints=web"
+      - "traefik.http.services.authelia.loadbalancer.server.port=9091"
+    depends_on:
+      - redis
+
+  # =============================================================================
+  # Redis - Session Storage for Authelia
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: fastapi-redis
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =============================================================================
+  # PostgreSQL - Database
+  # =============================================================================
+  postgres:
+    image: postgres:17
+    container_name: fastapi-postgres
+    restart: unless-stopped
+    networks:
+      - proxy
+    ports:
+      - "15432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-fastapi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fastapi_password}
+      POSTGRES_DB: ${POSTGRES_DB:-fastapi_db}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fastapi} -d ${POSTGRES_DB:-fastapi_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =============================================================================
+  # FastAPI Application
+  # =============================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi-app
+    restart: unless-stopped
+    networks:
+      - proxy
+    expose:
+      - 8000
+    environment:
+      PYTHONPATH: /app/src
+      DATABASE_URL: postgresql://${POSTGRES_USER:-fastapi}:${POSTGRES_PASSWORD:-fastapi_password}@postgres:5432/${POSTGRES_DB:-fastapi_db}
+      REDIS_URL: redis://redis:6379
+    labels:
+      - "traefik.enable=true"
+      # Router for /api
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.routers.api.middlewares=authelia,strip-api"
+      # Service
+      - "traefik.http.services.api.loadbalancer.server.port=8000"
+      # Strip /api prefix middleware
+      - "traefik.http.middlewares.strip-api.stripprefix.prefixes=/api"
+      # Authelia ForwardAuth middleware
+      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/authz/forward-auth"
+      - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+...

@@ -1,10 +1,8 @@
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from abc import ABC, abstractmethod
 
 from src.blog.domain.article import Article
-
-ARTICLE_REPOSITORY = "ArticleRepository"
 
 
 class ArticleRepository(ABC):
@@ -27,5 +25,7 @@ class ArticleRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def find_all(self, find_filters, find_order, find_limits) -> List[Article]:
+    def find_all(
+        self, find_filters: Dict, find_order: Dict, find_limits: Tuple[int, int]
+    ) -> List[Article]:
         raise NotImplementedError

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from copy import copy
 
@@ -25,7 +25,9 @@ class UserRepositoryMemory(UserRepository):
     def find_one_by_username(self, username: str) -> Optional[User]:
         return next(filter(lambda x: x.username == username, self._users), None)
 
-    def find_all(self) -> List[User]:
+    def find_all(
+        self, find_filters: Dict, find_order: Dict, find_limits: Tuple[int, int]
+    ) -> List[User]:
         filtered_users = copy(self._users)
         return filtered_users
 

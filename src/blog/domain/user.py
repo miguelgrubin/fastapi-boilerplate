@@ -9,12 +9,12 @@ from uuid import uuid4
 from src.blog.domain.errors.user_not_following import UserNotFollowing
 from src.blog.domain.events.user_created import UserCreated
 from src.blog.domain.events.user_followed import UserFollowed
+from src.blog.domain.events.user_profile_updated import UserProfileUpdated
 from src.blog.domain.events.user_unfollowed import UserUnfollowed
-from src.blog.domain.events.user_updated import UserUpdated
 from src.shared.domain.domain_model import DomainModel
 
 
-class UserUpdateParams(TypedDict):
+class UserProfileUpdateParams(TypedDict):
     bio: Optional[str]
     image: Optional[str]
 
@@ -25,6 +25,7 @@ class Profile:
     image: Optional[str] = None
 
 
+@dataclass
 class User(DomainModel):
     """User from blog (writer)"""
 
@@ -32,11 +33,11 @@ class User(DomainModel):
     email: str
     username: str
     password_hash: str
+    updated_at: datetime
+    created_at: datetime
     profile: Profile = field(default_factory=Profile)
     following: List[str] = field(default_factory=list)
     followers: List[str] = field(default_factory=list)
-    updated_at: datetime
-    created_at: datetime
 
     @classmethod
     def create(cls, username: str, password: str, email: str) -> "User":
@@ -44,7 +45,7 @@ class User(DomainModel):
         id = str(uuid4())
         now = datetime.now()
 
-        user = cls(
+        user = User(
             id=id,
             email=email,
             username=username,
@@ -57,12 +58,12 @@ class User(DomainModel):
 
         return user
 
-    def update_profile(self, payload: UserUpdateParams) -> None:
+    def update_profile(self, payload: UserProfileUpdateParams) -> None:
         """Updates email and profile info."""
         self.profile.bio = payload.get("bio", self.profile.bio)
         self.profile.image = payload.get("image", self.profile.image)
         self.updated_at = datetime.now()
-        self.record(UserUpdated(self.id, payload))
+        self.record(UserProfileUpdated(self.id, dict(payload)))
 
     def follow(self, user_id: str) -> None:
         self.following.append(user_id)

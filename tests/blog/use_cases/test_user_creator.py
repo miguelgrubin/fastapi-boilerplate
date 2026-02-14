@@ -1,11 +1,10 @@
 from unittest.mock import patch
 
 import pytest
+from src.blog.domain.errors.user_already_exists import UserAlreadyExists
 from src.blog.infrastructure.storage.user_repository_memory import UserRepositoryMemory
 from src.blog.use_cases.user_creator import UserCreator
 from src.shared.infrastructure.services.password_service_fake import PasswordServiceFake
-
-from blog.domain.errors.username_already_exists import UserAlreadyExists
 
 
 def _create_new_use_case():

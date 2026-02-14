@@ -1,5 +1,8 @@
 """Article Domain"""
 
+from typing import TypedDict
+
+from dataclasses import dataclass
 from datetime import datetime
 from uuid import uuid4
 
@@ -10,6 +13,14 @@ from src.blog.domain.events.article_updated import ArticleUpdated
 from src.shared.domain.domain_model import DomainModel
 
 
+class ArticleUpdateParams(TypedDict):
+    title: str
+    description: str
+    content: str
+    slug: str
+
+
+@dataclass
 class Article(DomainModel):
     """Article on blog"""
 
@@ -35,7 +46,7 @@ class Article(DomainModel):
         """Factory method to create a new article."""
         id = str(uuid4())
         now = datetime.now()
-        article = cls(
+        article = Article(
             id=id,
             title=title,
             description=description,
@@ -49,24 +60,18 @@ class Article(DomainModel):
         article.record(ArticleCreated(id))
         return article
 
-    def update(
-        self,
-        title: str | None = None,
-        description: str | None = None,
-        content: str | None = None,
-        slug: str | None = None,
-    ) -> None:
+    def update(self, payload: ArticleUpdateParams) -> None:
         """Update article fields and refresh updated_at timestamp."""
-        if title is not None:
+        if title := payload.get("title"):
             self.title = title
-        if description is not None:
+        if description := payload.get("description"):
             self.description = description
-        if content is not None:
+        if content := payload.get("content"):
             self.content = content
-        if slug is not None:
+        if slug := payload.get("slug"):
             self.slug = slug
         self.updated_at = datetime.now()
-        self.record(ArticleUpdated(self.id))
+        self.record(ArticleUpdated(self.id, dict(payload)))
 
     def publish(self) -> None:
         """Publish the article."""

@@ -1,10 +1,8 @@
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from abc import ABC, abstractmethod
 
 from src.blog.domain.user import User
-
-USER_REPOSITORY = "UserRepository"
 
 
 class UserRepository(ABC):
@@ -31,5 +29,7 @@ class UserRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def find_all(self, find_filters, find_order, find_limits) -> List[User]:
+    def find_all(
+        self, find_filters: Dict, find_order: Dict, find_limits: Tuple[int, int]
+    ) -> List[User]:
         raise NotImplementedError

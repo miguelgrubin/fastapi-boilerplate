@@ -16,4 +16,4 @@ class ServerSettings(BaseSettings):
     )
 
 
-settings = ServerSettings()
+settings = ServerSettings()  # ty:ignore[missing-argument]

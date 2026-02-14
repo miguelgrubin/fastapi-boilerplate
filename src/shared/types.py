@@ -1,5 +1,8 @@
-from typing import Dict
+from dataclasses import dataclass
 
 from src.shared.domain.services.password_service import PasswordService
 
-SharedServicesType = Dict[str, PasswordService]
+
+@dataclass
+class SharedServices:
+    password_service: PasswordService

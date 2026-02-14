@@ -1,4 +1,4 @@
-from blog.domain.errors.username_already_exists import UserAlreadyExists
+from src.blog.domain.errors.user_already_exists import UserAlreadyExists
 from src.blog.domain.user import User
 from src.blog.domain.user_repository import UserRepository
 from src.shared.domain.services.password_service import PasswordService

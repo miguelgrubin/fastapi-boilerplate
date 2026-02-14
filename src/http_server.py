@@ -10,4 +10,4 @@ def checkhealth():
     return {"ping": "pong"}
 
 
-blog_app = create_blog_http_server(app)
+create_blog_http_server(app)

@@ -4,7 +4,7 @@ from src.blog.infrastructure.server.user_dtos import ProfileResponse, UserRespon
 
 class UserMapper:
     @staticmethod
-    def toDTO(user: User) -> UserResponse:
+    def to_dto(user: User) -> UserResponse:
         user_profile = ProfileResponse(bio=user.profile.bio, image=user.profile.image)
         return UserResponse(
             id=user.id,

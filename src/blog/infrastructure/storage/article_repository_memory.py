@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from copy import copy
 
@@ -21,7 +21,9 @@ class ArticleRepositoryMemory(ArticleRepository):
     def find_one(self, article_id: str) -> Optional[Article]:
         return next(filter(lambda x: x.id == article_id, self._articles), None)
 
-    def find_all(self) -> List[Article]:
+    def find_all(
+        self, find_filters: Dict, find_order: Dict, find_limits: Tuple[int, int]
+    ) -> List[Article]:
         filtered_articles = copy(self._articles)
         return filtered_articles
 

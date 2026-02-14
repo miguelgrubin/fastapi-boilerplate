@@ -13,4 +13,4 @@ def test_should_check():
     password = "lalala2"
     hash = service.hash(password)
 
-    assert service.check(hash, password) is True
+    assert service.check(password, hash) is True

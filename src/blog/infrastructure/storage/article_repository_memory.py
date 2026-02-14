@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-import copy
+from copy import copy
 
 from src.blog.domain.article import Article
 from src.blog.domain.article_repository import ArticleRepository
@@ -24,3 +24,6 @@ class ArticleRepositoryMemory(ArticleRepository):
     def find_all(self) -> List[Article]:
         filtered_articles = copy(self._articles)
         return filtered_articles
+
+    def find_by_slug(self, slug: str) -> Optional[Article]:
+        return next(filter(lambda x: x.slug == slug, self._articles), None)

@@ -24,4 +24,4 @@ class UserResponse(BaseModel):
     following: List[str] = []
     followers: List[str] = []
     updated_at: datetime
-    crated_at: datetime
+    created_at: datetime

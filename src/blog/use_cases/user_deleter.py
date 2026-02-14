@@ -1,8 +1,9 @@
 from src.blog.domain.errors.user_not_found import UserNotFound
 from src.blog.domain.user_repository import UserRepository
+from src.shared.use_cases.use_case import UseCase
 
 
-class UserDeleter:
+class UserDeleter(UseCase):
     def __init__(self, user_repository: UserRepository) -> None:
         self.user_repository = user_repository
 

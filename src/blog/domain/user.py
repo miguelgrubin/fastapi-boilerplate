@@ -2,7 +2,7 @@
 
 from typing import List, Optional, TypedDict
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from uuid import uuid4
 
@@ -33,10 +33,10 @@ class User(DomainModel):
     username: str
     password_hash: str
     profile: Profile
-    following: List[str] = []
-    followers: List[str] = []
+    following: List[str] = field(default_factory=list)
+    followers: List[str] = field(default_factory=list)
     updated_at: datetime
-    crated_at: datetime
+    created_at: datetime
 
     @classmethod
     def create(cls, username: str, password: str, email: str):
@@ -48,7 +48,7 @@ class User(DomainModel):
         user.password_hash = password
         user.profile = Profile()
         user.updated_at = datetime.now()
-        user.crated_at = datetime.now()
+        user.created_at = datetime.now()
 
         user.record(UserCreated())
         return user

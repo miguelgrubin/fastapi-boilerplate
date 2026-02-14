@@ -11,8 +11,8 @@ class UserMapper:
             email=user.email,
             username=user.username,
             profile=user_profile,
-            crated_at=user.crated_at,
-            updated_at=user.crated_at,
+            created_at=user.created_at,
+            updated_at=user.updated_at,
             followers=user.followers,
             following=user.following,
         )

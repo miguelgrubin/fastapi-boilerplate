@@ -7,6 +7,7 @@ sections:
   - Decisions
   - Tasks
   - Issues
+  - Project Evaluation
   - Features
   - Rules
 ---
@@ -16,5 +17,6 @@ sections:
 - [Decisions](02-decisions.md)
 - [Tasks](03-tasks.md)
 - [Issues](04-issues.md)
+- [Project Evaluation](05-project-evaluation.md)
 - [Features](features/00-index.md)
 - [Rules](rules/00-index.md)

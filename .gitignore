@@ -41,6 +41,11 @@ venv
 .env.docker
 !.env.example
 
+# Coverage
+.coverage
+htmlcov/
+coverage.xml
+
 # Docker
 docker/traefik/certs/*.crt
 docker/traefik/certs/*.key

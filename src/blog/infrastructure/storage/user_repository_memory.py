@@ -1,13 +1,15 @@
 from typing import Dict, List, Optional, Tuple
 
 from copy import copy
+from dataclasses import dataclass, field
 
 from src.blog.domain.user import User
 from src.blog.domain.user_repository import UserRepository
 
 
+@dataclass
 class UserRepositoryMemory(UserRepository):
-    _users: List[User] = []
+    _users: List[User] = field(default_factory=list)
 
     def save(self, user: User) -> None:
         self._users.append(user)

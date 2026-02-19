@@ -46,7 +46,7 @@ def create_blog_http_server(app: FastAPI):
     blog_routes(app, use_cases)
 
 
-def create_blog_module():
+def create_blog_module() -> tuple[SharedServices, BlogRepositoriesType, BlogUseCasesType]:
     services = create_services()
     repositories = create_repositories()
     use_cases = create_use_cases(repositories, services)

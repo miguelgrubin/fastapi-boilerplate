@@ -1,15 +1,17 @@
 from typing import Dict, List, Optional, Tuple
 
 from copy import copy
+from dataclasses import dataclass, field
 
 from src.blog.domain.article import Article
 from src.blog.domain.article_repository import ArticleRepository
 
 
+@dataclass
 class ArticleRepositoryMemory(ArticleRepository):
     """docstring for ArticleRepository"""
 
-    _articles: List[Article] = []
+    _articles: List[Article] = field(default_factory=list)
 
     def save(self, article: Article) -> None:
         self._articles.append(article)

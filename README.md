@@ -1,6 +1,6 @@
 ## Docker Development
 
-Run the full stack with Nginx Proxy Manager, Authelia, PostgreSQL (pgvector), and Redis:
+Run the full stack with Traefik, Authelia, PostgreSQL, and Redis:
 
 ```bash
 # Start all services
@@ -23,55 +23,86 @@ docker compose --env-file .env.docker down -v
    docker compose --env-file .env.docker up -d
    ```
 
-2. **Access Nginx Proxy Manager Admin UI:**
-   - URL: http://localhost:81
-   - Default login: `admin@example.com` / `changeme`
-   - You'll be prompted to change credentials on first login
+2. **Wait for services to be healthy:**
+   ```bash
+   docker compose --env-file .env.docker ps
+   ```
 
-3. **Configure Proxy Host in NPM:**
-
-   Create a single proxy host for `localhost` with path-based routing:
-
-   - **Details tab:**
-     - Domain Names: `localhost`
-     - Scheme: `http`
-     - Forward Hostname/IP: `127.0.0.1` (placeholder, actual routing is in Advanced)
-     - Forward Port: `80` (placeholder)
-     - Enable "Block Common Exploits"
-
-   - **Advanced tab:**
-     - Copy and paste the entire contents of `docker/nginx-proxy-manager/path-routing.conf`
-
-   This configures:
-   - `/auth/*` → Authelia portal
-   - `/api/*` → FastAPI (protected by Authelia, prefix stripped)
-   - `/` → Redirects to `/api/docs`
+3. **Access the services** (see table below)
 
 ### Access URLs
 
 | Service | URL | Notes |
 |---------|-----|-------|
-| NPM Admin | http://localhost:81 | Configure proxy hosts here |
-| Authelia | http://localhost/auth | Login portal |
-| FastAPI | http://localhost/api | Protected API (redirects to /api/docs) |
-| API Docs | http://localhost/api/docs | OpenAPI documentation |
-| PostgreSQL | localhost:5432 | Direct database access |
+| Traefik Dashboard | http://localhost:1081 | View routing configuration |
+| Authelia | http://localhost:1080/auth | Login portal |
+| FastAPI | http://localhost:1080/api | Protected API (redirects to login) |
+| API Docs | http://localhost:1080/api/docs | OpenAPI documentation (public) |
+| PostgreSQL | localhost:15432 | Direct database access |
 
 **Authelia credentials:** admin / password
 
 ### How It Works
 
-All routing is handled via path prefixes on a single `localhost` domain:
+All routing is handled via path prefixes on `localhost:1080` using Traefik:
 
 1. **Authelia Portal (`/auth`)**: Serves the authentication UI
 2. **FastAPI API (`/api`)**: Protected by Authelia - unauthenticated requests redirect to `/auth`
 3. **Public endpoints**: `/api/docs`, `/api/redoc`, `/api/openapi.json`, `/api/health` bypass authentication
 
-The Nginx configuration in `docker/nginx-proxy-manager/path-routing.conf`:
-- Routes requests based on path prefix
-- Strips `/api` prefix before forwarding to FastAPI
-- Handles Authelia forward-auth verification
-- Passes authenticated user info to FastAPI via headers (`Remote-User`, `Remote-Email`, etc.)
+The configuration follows the [Authelia + Traefik Setup Guide](https://www.authelia.com/blog/authelia--traefik-setup-guide/):
+
+- `docker/traefik/config/traefik.yml` - Traefik static configuration
+- `docker/traefik/config/dynamic.yml` - Middlewares for auth and path stripping
+- `docker/authelia/config/configuration.yml` - Authelia settings with path-based access control
+- `docker/authelia/config/users_database.yml` - User credentials
+
+### Architecture
+
+```
+                    ┌─────────────────────────────────────────────────────┐
+                    │                    Traefik                          │
+                    │                  (Port 1080)                        │
+                    └─────────────────────────────────────────────────────┘
+                                           │
+           ┌───────────────────────────────┼───────────────────────────────┐
+           │                               │                               │
+           ▼                               ▼                               ▼
+    ┌─────────────┐               ┌─────────────────┐              ┌─────────────┐
+    │   /auth/*   │               │  /api/docs etc  │              │   /api/*    │
+    │  (bypass)   │               │    (bypass)     │              │ (protected) │
+    └─────────────┘               └─────────────────┘              └─────────────┘
+           │                               │                               │
+           ▼                               │                               ▼
+    ┌─────────────┐                        │                      ┌─────────────┐
+    │  Authelia   │                        │                      │  Authelia   │
+    │   Portal    │                        │                      │ ForwardAuth │
+    └─────────────┘                        │                      └─────────────┘
+                                           │                               │
+                                           ▼                               ▼
+                                    ┌─────────────────────────────────────────┐
+                                    │              FastAPI App                │
+                                    │              (Port 8000)                │
+                                    └─────────────────────────────────────────┘
+```
+
+### Customization
+
+**Change Authelia credentials:**
+```bash
+# Generate a new password hash
+docker run authelia/authelia:latest authelia crypto hash generate argon2 --password 'your-password'
+
+# Edit docker/authelia/config/users_database.yml with the new hash
+```
+
+**Generate secure secrets for production:**
+```bash
+# Generate new secrets
+openssl rand -hex 32
+
+# Update .env.docker with the generated values
+```
 
 ---
 

@@ -1,6 +1,11 @@
 # Traefik Dynamic Configuration
-# Defines middlewares for Authelia authentication
+# Defines middlewares for Authelia authentication and TLS certificates
 # https://www.authelia.com/integration/proxies/traefik/
+
+tls:
+  certificates:
+    - certFile: '/certs/local.crt'
+      keyFile: '/certs/local.key'
 
 http:
   middlewares:
@@ -8,29 +13,10 @@ http:
     # Used to protect routes that require authentication
     authelia:
       forwardAuth:
-        address: 'http://authelia:9091/api/authz/forward-auth'
+        address: 'http://fastapi-authelia:9091/api/authz/forward-auth'
         trustForwardHeader: true
         authResponseHeaders:
           - 'Remote-User'
           - 'Remote-Groups'
           - 'Remote-Name'
           - 'Remote-Email'
-
-    # Strip /api prefix before forwarding to FastAPI
-    strip-api:
-      stripPrefix:
-        prefixes:
-          - '/api'
-
-    # Chain middleware for protected API routes
-    api-auth:
-      chain:
-        middlewares:
-          - authelia
-          - strip-api
-
-    # Strip /api prefix only (no auth) for public endpoints
-    api-public:
-      chain:
-        middlewares:
-          - strip-api

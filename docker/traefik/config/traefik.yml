@@ -8,15 +8,22 @@ api:
   insecure: true  # Enable dashboard without auth for localhost development
 
 log:
-  level: 'INFO'
+  level: 'DEBUG'
 
 accessLog:
   filePath: '/logs/access.log'
 
-# Entry points - HTTP only for localhost development
+# Entry points - HTTP redirects to HTTPS
 entryPoints:
   web:
     address: ':80'
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ':443'
 
 providers:
   docker:

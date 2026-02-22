@@ -50,3 +50,4 @@ coverage.xml
 docker/traefik/certs/*.crt
 docker/traefik/certs/*.key
 docker/traefik/certs/*.pem
+docker/traefik/logs/*.log

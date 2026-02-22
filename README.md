@@ -1,3 +1,11 @@
+
+## Requirements
+- Python 3.12+
+- Docker (for development)
+- OpenSSL (for generating secrets)
+- uv (for managing dependencies and virtual environments)
+- mkcert (for generating local TLS certificates)
+
 ## Docker Development
 
 Run the full stack with Traefik, Authelia, PostgreSQL, and Redis:
@@ -34,27 +42,27 @@ docker compose --env-file .env.docker down -v
 
 | Service | URL | Notes |
 |---------|-----|-------|
-| Traefik Dashboard | http://localhost:1081 | View routing configuration |
-| Authelia | http://localhost:1080/auth | Login portal |
-| FastAPI | http://localhost:1080/api | Protected API (redirects to login) |
-| API Docs | http://localhost:1080/api/docs | OpenAPI documentation (public) |
+| Traefik Dashboard | http://localhost:8080 | View routing configuration |
+| Authelia | http://auth.localtest.me | Login portal |
+| FastAPI | http://blog.localtest.me | Protected API (redirects to login) |
+| API Docs | http://blog.localtest.me/docs | OpenAPI documentation (public) |
 | PostgreSQL | localhost:15432 | Direct database access |
 
 **Authelia credentials:** admin / password
 
 ### How It Works
 
-All routing is handled via path prefixes on `localhost:1080` using Traefik:
+All routing is handled via subdomains on `*.localtest.me` using Traefik:
 
-1. **Authelia Portal (`/auth`)**: Serves the authentication UI
-2. **FastAPI API (`/api`)**: Protected by Authelia - unauthenticated requests redirect to `/auth`
-3. **Public endpoints**: `/api/docs`, `/api/redoc`, `/api/openapi.json`, `/api/health` bypass authentication
+1. **Authelia Portal (`auth.localtest.me`)**: Serves the authentication UI
+2. **FastAPI API (`blog.localtest.me`)**: Protected by Authelia - unauthenticated requests redirect to `auth.localtest.me`
+3. **Public endpoints**: `/docs`, `/redoc`, `/openapi.json`, `/health` on `blog.localhost` bypass authentication
 
 The configuration follows the [Authelia + Traefik Setup Guide](https://www.authelia.com/blog/authelia--traefik-setup-guide/):
 
 - `docker/traefik/config/traefik.yml` - Traefik static configuration
-- `docker/traefik/config/dynamic.yml` - Middlewares for auth and path stripping
-- `docker/authelia/config/configuration.yml` - Authelia settings with path-based access control
+- `docker/traefik/config/dynamic.yml` - Authelia ForwardAuth middleware
+- `docker/authelia/config/configuration.yml` - Authelia settings with subdomain-based access control
 - `docker/authelia/config/users_database.yml` - User credentials
 
 ### Architecture
@@ -62,17 +70,17 @@ The configuration follows the [Authelia + Traefik Setup Guide](https://www.authe
 ```
                     ┌─────────────────────────────────────────────────────┐
                     │                    Traefik                          │
-                    │                  (Port 1080)                        │
+                    │                   (Port 80)                         │
                     └─────────────────────────────────────────────────────┘
                                            │
            ┌───────────────────────────────┼───────────────────────────────┐
            │                               │                               │
            ▼                               ▼                               ▼
-    ┌─────────────┐               ┌─────────────────┐              ┌─────────────┐
-    │   /auth/*   │               │  /api/docs etc  │              │   /api/*    │
-    │  (bypass)   │               │    (bypass)     │              │ (protected) │
-    └─────────────┘               └─────────────────┘              └─────────────┘
-           │                               │                               │
+    ┌─────────────────┐             ┌────────────────────┐             ┌─────────────────┐
+    │auth.localtest.me│             │ blog.localtest.me  │             │blog.localtest.me│
+    │     (bypass)    │             │   /docs (bypass)   │             │   (protected)   │
+    └─────────────────┘             └────────────────────┘             └─────────────────┘
+           │                               │                                │
            ▼                               │                               ▼
     ┌─────────────┐                        │                      ┌─────────────┐
     │  Authelia   │                        │                      │  Authelia   │

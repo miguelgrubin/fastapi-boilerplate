@@ -3,12 +3,14 @@
 #
 # Usage: docker compose --env-file .env.docker up -d
 #
-# Access URLs:
-#   - http://localhost:1080/auth     - Authelia portal
-#   - http://localhost:1080/api      - FastAPI app (protected)
-#   - http://localhost:1080/api/docs - API documentation (public)
-#   - http://localhost:1081          - Traefik Dashboard
-#   - localhost:15432                - PostgreSQL direct access
+# Access URLs (HTTPS):
+#   - https://blog.localtest.me       - FastAPI app (protected)
+#   - https://blog.localtest.me/docs  - API documentation (public)
+#   - https://auth.localtest.me       - Authelia portal
+#   - http://localhost:8080           - Traefik Dashboard
+#   - localhost:15432                 - PostgreSQL direct access
+#
+# Note: localtest.me resolves to 127.0.0.1 - no /etc/hosts changes needed!
 #
 # Default credentials:
 #   Authelia: admin / password
@@ -27,14 +29,16 @@ services:
       - proxy
       - authelia
     ports:
-      - "1080:80"      # HTTP
-      - "1081:8080"    # Dashboard
+      - "80:80"        # HTTP (redirects to HTTPS)
+      - "443:443"      # HTTPS
+      - "8080:8080"    # Dashboard
     environment:
       TZ: 'Europe/Madrid'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
       - './docker/traefik/config/traefik.yml:/traefik.yml:ro'
       - './docker/traefik/config/dynamic.yml:/dynamic.yml:ro'
+      - './docker/traefik/certs:/certs:ro'
       - './docker/traefik/data/:/data'
       - './docker/traefik/logs:/logs'
     healthcheck:
@@ -67,9 +71,10 @@ services:
       # Expose Authelia through Traefik
       traefik.enable: 'true'
       traefik.docker.network: 'proxy'
-      # Route /auth/* to Authelia
-      traefik.http.routers.authelia.rule: 'PathPrefix(`/auth`)'
-      traefik.http.routers.authelia.entrypoints: 'web'
+      # Route auth.localtest.me to Authelia (HTTPS)
+      traefik.http.routers.authelia.rule: 'Host(`auth.localtest.me`)'
+      traefik.http.routers.authelia.entrypoints: 'websecure'
+      traefik.http.routers.authelia.tls: 'true'
       traefik.http.routers.authelia.service: 'authelia'
       traefik.http.services.authelia.loadbalancer.server.port: '9091'
     depends_on:
@@ -99,7 +104,7 @@ services:
   # PostgreSQL - Database
   # =============================================================================
   postgres:
-    image: postgres:17
+    image: pgvector/pgvector:pg18-trixie
     container_name: fastapi-postgres
     restart: unless-stopped
     networks:
@@ -140,17 +145,18 @@ services:
       traefik.docker.network: 'proxy'
 
       # Router for public API endpoints (docs, health) - NO authentication
-      traefik.http.routers.api-public.rule: 'PathPrefix(`/api/docs`) || PathPrefix(`/api/redoc`) || Path(`/api/openapi.json`) || PathPrefix(`/api/health`)'
-      traefik.http.routers.api-public.entrypoints: 'web'
+      traefik.http.routers.api-public.rule: 'Host(`blog.localtest.me`) && (PathPrefix(`/docs`) || PathPrefix(`/redoc`) || Path(`/openapi.json`) || PathPrefix(`/health`))'
+      traefik.http.routers.api-public.entrypoints: 'websecure'
+      traefik.http.routers.api-public.tls: 'true'
       traefik.http.routers.api-public.priority: '100'
-      traefik.http.routers.api-public.middlewares: 'api-public@file'
       traefik.http.routers.api-public.service: 'api'
 
       # Router for protected API endpoints - requires Authelia authentication
-      traefik.http.routers.api.rule: 'PathPrefix(`/api`)'
-      traefik.http.routers.api.entrypoints: 'web'
+      traefik.http.routers.api.rule: 'Host(`blog.localtest.me`)'
+      traefik.http.routers.api.entrypoints: 'websecure'
+      traefik.http.routers.api.tls: 'true'
       traefik.http.routers.api.priority: '50'
-      traefik.http.routers.api.middlewares: 'api-auth@file'
+      traefik.http.routers.api.middlewares: 'authelia@file'
       traefik.http.routers.api.service: 'api'
 
       # Service definition

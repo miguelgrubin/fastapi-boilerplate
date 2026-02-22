@@ -24,9 +24,38 @@ format:
 test:
 	uv run pytest tests
 
+.PHONY: coverage
+coverage:
+	uv run coverage run -m pytest tests
+	uv run coverage report
+
+.PHONY: coverage-html
+coverage-html:
+	uv run coverage run -m pytest tests
+	uv run coverage html
+	@echo "HTML report generated in htmlcov/index.html"
+
 .PHONY: lint
 lint:
 	PYTHONPATH=./src uv run pylint ./src
 
 start:
-	PYTHONPATH=./src uv run uvicorn main:app --reload
+	uv run python main.py http-server
+
+.PHONY: clean
+clean:
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete
+	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name ".coverage" -delete
+	find . -type d -name "htmlcov" -exec rm -rf {} + 2>/dev/null || true
+
+.PHONY: certs
+certs:
+	@mkdir -p docker/traefik/certs
+	mkcert -cert-file docker/traefik/certs/local.crt \
+	       -key-file docker/traefik/certs/local.key \
+	       "*.localtest.me" "localtest.me"
+	@echo "Certificates generated in docker/traefik/certs/"

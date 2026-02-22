@@ -1,0 +1,105 @@
+# Authelia Configuration for FastAPI Boilerplate
+# Adapted from Authelia + Traefik Setup Guide
+# https://www.authelia.com/blog/authelia--traefik-setup-guide/
+#
+# Secrets are passed via environment variables (see .env.docker)
+# Session storage uses Redis for persistence across restarts
+#
+# Note: Using localtest.me domain which resolves to 127.0.0.1
+
+server:
+  address: 'tcp4://:9091'
+  endpoints:
+    authz:
+      forward-auth:
+        implementation: 'ForwardAuth'
+
+log:
+  level: 'debug'
+  file_path: '/var/log/authelia/authelia.log'
+  keep_stdout: true
+
+identity_validation:
+  elevated_session:
+    require_second_factor: false
+  reset_password:
+    jwt_lifespan: '5 minutes'
+
+totp:
+  disable: false
+  issuer: 'localtest.me'
+  period: 30
+  skew: 1
+
+password_policy:
+  zxcvbn:
+    enabled: true
+    min_score: 3
+
+authentication_backend:
+  file:
+    path: '/config/users_database.yml'
+    password:
+      algorithm: 'argon2'
+      argon2:
+        variant: 'argon2id'
+        iterations: 3
+        memory: 65536
+        parallelism: 4
+        key_length: 32
+        salt_length: 16
+
+# Access control rules - subdomain-based for localtest.me
+# Public endpoints bypass authentication
+# All other routes on blog.localtest.me require one_factor auth
+access_control:
+  default_policy: 'deny'
+  rules:
+    # Authelia portal - always accessible
+    - domain: 'auth.localtest.me'
+      policy: 'bypass'
+
+    # Public API endpoints - no authentication required
+    - domain: 'blog.localtest.me'
+      resources:
+        - '^/docs([/?].*)?$'
+        - '^/redoc([/?].*)?$'
+        - '^/openapi.json$'
+        - '^/checkhealth([/?].*)?$'
+      policy: 'bypass'
+
+    # Protected API endpoints - require authentication
+    - domain: 'blog.localtest.me'
+      policy: 'one_factor'
+
+# Session configuration with Redis for persistence
+session:
+  name: 'authelia_session'
+  same_site: 'lax'
+  inactivity: '5m'
+  expiration: '1h'
+  remember_me: '1M'
+  cookies:
+    - domain: 'localtest.me'
+      authelia_url: 'https://auth.localtest.me'
+      default_redirection_url: 'https://blog.localtest.me/docs'
+  redis:
+    host: 'redis'
+    port: 6379
+
+regulation:
+  max_retries: 5
+  find_time: '2m'
+  ban_time: '5m'
+
+storage:
+  postgres:
+    address: 'tcp://postgres:5432'
+    database: 'authelia'
+    username: 'fastapi'
+    timeout: '5s'
+
+notifier:
+  disable_startup_check: false
+  filesystem:
+    filename: '/config/notification.txt'

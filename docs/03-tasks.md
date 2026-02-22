@@ -4,8 +4,8 @@ This document tracks planned improvements and missing implementations for the pr
 
 ## High Priority
 
-- [ ] Implement error handlers to transform domain errors into HTTP errors (status code, error message).
 - [ ] Implement Authentication and Authorization using OpenID with Authelia and Traefik.
+- [ ] Use App Factory to create MCP Server, HTTP Server and cli commands.
 
 ## Medium Priority
 
@@ -13,7 +13,6 @@ This document tracks planned improvements and missing implementations for the pr
 - [ ] Use SQLAlchemy and Alembic for database interactions and migrations.
 - [ ] Create SQL repository implementations for User and Article.
 - [ ] Create MCP Server with FastMCP
-
 
 ## Low Priority
 
@@ -24,6 +23,8 @@ This document tracks planned improvements and missing implementations for the pr
 
 ## Completed
 
+- [x] Create App Settings
+- [x] Implement error handlers to transform domain errors into HTTP errors (status code, error message).
 - [x] Domain Events base classes (`shared/domain/events/`)
 - [x] Event Types enum (`shared/domain/events/event_types.py`)
 - [x] Password Service abstraction and implementations

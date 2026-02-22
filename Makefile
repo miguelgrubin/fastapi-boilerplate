@@ -51,3 +51,11 @@ clean:
 	find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name ".coverage" -delete
 	find . -type d -name "htmlcov" -exec rm -rf {} + 2>/dev/null || true
+
+.PHONY: certs
+certs:
+	@mkdir -p docker/traefik/certs
+	mkcert -cert-file docker/traefik/certs/local.crt \
+	       -key-file docker/traefik/certs/local.key \
+	       "*.localtest.me" "localtest.me"
+	@echo "Certificates generated in docker/traefik/certs/"

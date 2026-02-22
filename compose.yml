@@ -67,6 +67,7 @@ services:
       AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET: ${AUTHELIA_JWT_SECRET}
       AUTHELIA_SESSION_SECRET: ${AUTHELIA_SESSION_SECRET}
       AUTHELIA_STORAGE_ENCRYPTION_KEY: ${AUTHELIA_STORAGE_ENCRYPTION_KEY}
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD: ${AUTHELIA_STORAGE_POSTGRES_PASSWORD}
     labels:
       # Expose Authelia through Traefik
       traefik.enable: 'true'
@@ -79,6 +80,8 @@ services:
       traefik.http.services.authelia.loadbalancer.server.port: '9091'
     depends_on:
       redis:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
 
   # =============================================================================
@@ -109,10 +112,12 @@ services:
     restart: unless-stopped
     networks:
       - proxy
+      - authelia
     ports:
       - "15432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-fastapi}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fastapi_password}

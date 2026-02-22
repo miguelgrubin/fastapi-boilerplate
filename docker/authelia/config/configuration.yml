@@ -93,8 +93,11 @@ regulation:
   ban_time: '5m'
 
 storage:
-  local:
-    path: '/config/db.sqlite3'
+  postgres:
+    address: 'tcp://postgres:5432'
+    database: 'authelia'
+    username: 'fastapi'
+    timeout: '5s'
 
 notifier:
   disable_startup_check: false

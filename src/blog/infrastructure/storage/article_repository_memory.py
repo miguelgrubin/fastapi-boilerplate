@@ -31,3 +31,6 @@ class ArticleRepositoryMemory(ArticleRepository):
 
     def find_by_slug(self, slug: str) -> Optional[Article]:
         return next(filter(lambda x: x.slug == slug, self._articles), None)
+
+    def clear(self) -> None:
+        self._articles = []

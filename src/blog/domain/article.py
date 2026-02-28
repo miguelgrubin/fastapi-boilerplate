@@ -1,8 +1,8 @@
 """Article Domain"""
 
-from typing import TypedDict
+from typing import List, Optional, TypedDict
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from uuid import uuid4
 
@@ -10,14 +10,16 @@ from src.blog.domain.events.article_created import ArticleCreated
 from src.blog.domain.events.article_published import ArticlePublished
 from src.blog.domain.events.article_unpublished import ArticleUnpublished
 from src.blog.domain.events.article_updated import ArticleUpdated
+from src.blog.domain.value_objects.slug import Slug
 from src.shared.domain.domain_model import DomainModel
 
 
-class ArticleUpdateParams(TypedDict):
+class ArticleUpdateParams(TypedDict, total=False):
     title: str
     description: str
     content: str
-    slug: str
+    category_id: Optional[str]
+    tags: List[str]
 
 
 @dataclass
@@ -33,6 +35,8 @@ class Article(DomainModel):
     created_at: datetime
     updated_at: datetime
     published: bool
+    category_id: Optional[str] = None
+    tags: List[str] = field(default_factory=list)
 
     @classmethod
     def create(
@@ -40,12 +44,14 @@ class Article(DomainModel):
         title: str,
         description: str,
         content: str,
-        slug: str,
         author_id: str,
+        category_id: Optional[str] = None,
+        tags: Optional[List[str]] = None,
     ) -> "Article":
         """Factory method to create a new article."""
         id = str(uuid4())
         now = datetime.now()
+        slug = Slug.from_name(title).value
         article = Article(
             id=id,
             title=title,
@@ -56,6 +62,8 @@ class Article(DomainModel):
             created_at=now,
             updated_at=now,
             published=False,
+            category_id=category_id,
+            tags=tags or [],
         )
         article.record(ArticleCreated(id))
         return article
@@ -64,12 +72,15 @@ class Article(DomainModel):
         """Update article fields and refresh updated_at timestamp."""
         if title := payload.get("title"):
             self.title = title
+            self.slug = Slug.from_name(title).value
         if description := payload.get("description"):
             self.description = description
         if content := payload.get("content"):
             self.content = content
-        if slug := payload.get("slug"):
-            self.slug = slug
+        if "category_id" in payload:
+            self.category_id = payload["category_id"]
+        if "tags" in payload:
+            self.tags = payload["tags"]
         self.updated_at = datetime.now()
         self.record(ArticleUpdated(self.id, dict(payload)))
 

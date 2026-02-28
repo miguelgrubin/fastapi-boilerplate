@@ -25,7 +25,7 @@ dev = [
   "faker",
   "pytest-asyncio",
   "freezegun",
-  "sqlalchemy-stubs",
+
   "coverage[toml]",
 ]
 

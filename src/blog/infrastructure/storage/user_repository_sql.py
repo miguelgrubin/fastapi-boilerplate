@@ -79,7 +79,7 @@ class UserRepositorySql(UserRepository):
         }
 
     @staticmethod
-    def _to_entity(row) -> User:  # type: ignore[no-untyped-def]
+    def _to_entity(row) -> User:
         """Map a database row to a domain User entity."""
         following = row.following
         if isinstance(following, str):

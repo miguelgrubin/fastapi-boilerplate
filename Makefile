@@ -52,6 +52,22 @@ clean:
 	find . -type f -name ".coverage" -delete
 	find . -type d -name "htmlcov" -exec rm -rf {} + 2>/dev/null || true
 
+.PHONY: migrate
+migrate:
+	uv run alembic upgrade head
+
+.PHONY: migrate-create
+migrate-create:
+	uv run alembic revision --autogenerate -m "$(m)"
+
+.PHONY: migrate-downgrade
+migrate-downgrade:
+	uv run alembic downgrade -1
+
+.PHONY: migrate-history
+migrate-history:
+	uv run alembic history --verbose
+
 .PHONY: certs
 certs:
 	@mkdir -p docker/traefik/certs

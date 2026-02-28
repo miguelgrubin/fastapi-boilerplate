@@ -1,11 +1,11 @@
 from src.blog.domain.article import Article
-from src.blog.domain.events.article_created import ArticleCreated, ARTICLE_CREATED_EVENT
-from src.blog.domain.events.article_published import ArticlePublished, ARTICLE_PUBLISHED_EVENT
+from src.blog.domain.events.article_created import ARTICLE_CREATED_EVENT, ArticleCreated
+from src.blog.domain.events.article_published import ARTICLE_PUBLISHED_EVENT, ArticlePublished
 from src.blog.domain.events.article_unpublished import (
-    ArticleUnpublished,
     ARTICLE_UNPUBLISHED_EVENT,
+    ArticleUnpublished,
 )
-from src.blog.domain.events.article_updated import ArticleUpdated, ARTICLE_UPDATED_EVENT
+from src.blog.domain.events.article_updated import ARTICLE_UPDATED_EVENT, ArticleUpdated
 
 
 def _create_article(**overrides):

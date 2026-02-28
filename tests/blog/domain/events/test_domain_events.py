@@ -1,22 +1,22 @@
 import uuid
 
-from src.blog.domain.events.article_created import ArticleCreated, ARTICLE_CREATED_EVENT
-from src.blog.domain.events.article_published import ArticlePublished, ARTICLE_PUBLISHED_EVENT
+from src.blog.domain.events.article_created import ARTICLE_CREATED_EVENT, ArticleCreated
+from src.blog.domain.events.article_published import ARTICLE_PUBLISHED_EVENT, ArticlePublished
 from src.blog.domain.events.article_unpublished import (
-    ArticleUnpublished,
     ARTICLE_UNPUBLISHED_EVENT,
+    ArticleUnpublished,
 )
-from src.blog.domain.events.article_updated import ArticleUpdated, ARTICLE_UPDATED_EVENT
-from src.blog.domain.events.comment_created import CommentCreated, COMMENT_CREATED_EVENT
-from src.blog.domain.events.comment_deleted import CommentDeleted, COMMENT_DELETED_EVENT
-from src.blog.domain.events.user_created import UserCreated, USER_CREATED_EVENT
-from src.blog.domain.events.user_deleted import UserDeleted, USER_DELETED_EVENT
-from src.blog.domain.events.user_followed import UserFollowed, USER_FOLLOWED_EVENT
+from src.blog.domain.events.article_updated import ARTICLE_UPDATED_EVENT, ArticleUpdated
+from src.blog.domain.events.comment_created import COMMENT_CREATED_EVENT, CommentCreated
+from src.blog.domain.events.comment_deleted import COMMENT_DELETED_EVENT, CommentDeleted
+from src.blog.domain.events.user_created import USER_CREATED_EVENT, UserCreated
+from src.blog.domain.events.user_deleted import USER_DELETED_EVENT, UserDeleted
+from src.blog.domain.events.user_followed import USER_FOLLOWED_EVENT, UserFollowed
 from src.blog.domain.events.user_profile_updated import (
-    UserProfileUpdated,
     USER_PROFILE_UPDATED_EVENT,
+    UserProfileUpdated,
 )
-from src.blog.domain.events.user_unfollowed import UserUnfollowed, USER_UNFOLLOWED_EVENT
+from src.blog.domain.events.user_unfollowed import USER_UNFOLLOWED_EVENT, UserUnfollowed
 
 
 def _assert_valid_uuid(value: str) -> None:

@@ -1,6 +1,6 @@
 from src.blog.domain.comment import Comment
-from src.blog.domain.events.comment_created import CommentCreated, COMMENT_CREATED_EVENT
-from src.blog.domain.events.comment_deleted import CommentDeleted, COMMENT_DELETED_EVENT
+from src.blog.domain.events.comment_created import COMMENT_CREATED_EVENT, CommentCreated
+from src.blog.domain.events.comment_deleted import COMMENT_DELETED_EVENT, CommentDeleted
 
 
 def _create_comment(**overrides):

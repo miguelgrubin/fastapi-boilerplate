@@ -1,12 +1,12 @@
 import pytest
 from src.blog.domain.errors.user_not_following import UserNotFollowing
-from src.blog.domain.events.user_created import UserCreated, USER_CREATED_EVENT
-from src.blog.domain.events.user_followed import UserFollowed, USER_FOLLOWED_EVENT
+from src.blog.domain.events.user_created import USER_CREATED_EVENT, UserCreated
+from src.blog.domain.events.user_followed import USER_FOLLOWED_EVENT, UserFollowed
 from src.blog.domain.events.user_profile_updated import (
-    UserProfileUpdated,
     USER_PROFILE_UPDATED_EVENT,
+    UserProfileUpdated,
 )
-from src.blog.domain.events.user_unfollowed import UserUnfollowed, USER_UNFOLLOWED_EVENT
+from src.blog.domain.events.user_unfollowed import USER_UNFOLLOWED_EVENT, UserUnfollowed
 from src.blog.domain.user import Profile, User
 
 

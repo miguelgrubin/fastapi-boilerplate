@@ -5,7 +5,6 @@ from pydantic import BaseModel
 
 class TagCreationDTO(BaseModel):
     name: str
-    slug: str
 
 
 class TagResponse(BaseModel):

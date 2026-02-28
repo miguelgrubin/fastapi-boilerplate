@@ -47,7 +47,6 @@ def blog_routes(app: FastAPI, use_cases: BlogUseCasesType) -> None:
             title=payload.title,
             description=payload.description,
             content=payload.content,
-            slug=payload.slug,
             author_id=payload.author_id,
             category_id=payload.category_id,
             tags=payload.tags,
@@ -128,7 +127,6 @@ def blog_routes(app: FastAPI, use_cases: BlogUseCasesType) -> None:
     def create_category(payload: CategoryCreationDTO) -> CategoryResponse:
         category = use_cases.category_creator.execute(
             name=payload.name,
-            slug=payload.slug,
         )
         return CategoryMapper.to_dto(category)
 
@@ -147,7 +145,6 @@ def blog_routes(app: FastAPI, use_cases: BlogUseCasesType) -> None:
     def create_tag(payload: TagCreationDTO) -> TagResponse:
         tag = use_cases.tag_creator.execute(
             name=payload.name,
-            slug=payload.slug,
         )
         return TagMapper.to_dto(tag)
 

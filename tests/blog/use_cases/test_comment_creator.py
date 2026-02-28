@@ -35,7 +35,6 @@ def _create_article(article_repo, user_repo, user):
         title="Test Article",
         description="Summary",
         content="Content",
-        slug="test-article",
         author_id=user.id,
     )
 

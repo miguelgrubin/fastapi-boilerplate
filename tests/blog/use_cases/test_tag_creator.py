@@ -15,7 +15,7 @@ def _create_use_case():
 
 def test_should_create_tag():
     use_case, _ = _create_use_case()
-    tag = use_case.execute(name="Python", slug="python")
+    tag = use_case.execute(name="Python")
 
     assert tag.id != ""
     assert tag.name == "Python"
@@ -23,26 +23,33 @@ def test_should_create_tag():
     assert tag.created_at is not None
 
 
+def test_should_generate_slug_from_name():
+    use_case, _ = _create_use_case()
+    tag = use_case.execute(name="My Fav Tag")
+
+    assert tag.slug == "my-fav-tag"
+
+
 def test_should_raise_error_when_slug_already_exists():
     use_case, _ = _create_use_case()
-    use_case.execute(name="Python", slug="python")
+    use_case.execute(name="Python")
 
     with pytest.raises(TagAlreadyExists):
-        use_case.execute(name="Python Language", slug="python")
+        use_case.execute(name="Python")
 
 
 @patch.object(TagRepositoryMemory, "save")
 def test_should_save_on_repository(mock_save):
     use_case, _ = _create_use_case()
-    use_case.execute(name="Python", slug="python")
+    use_case.execute(name="Python")
 
     mock_save.assert_called()
 
 
 def test_should_allow_different_slugs():
     use_case, _ = _create_use_case()
-    tag1 = use_case.execute(name="Python", slug="python")
-    tag2 = use_case.execute(name="JavaScript", slug="javascript")
+    tag1 = use_case.execute(name="Python")
+    tag2 = use_case.execute(name="JavaScript")
 
     assert tag1.id != tag2.id
     assert tag1.slug != tag2.slug

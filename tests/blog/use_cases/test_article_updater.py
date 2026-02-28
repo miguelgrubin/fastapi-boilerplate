@@ -28,7 +28,6 @@ def _create_article(article_repo, user_repo):
         title="Original Title",
         description="Original Summary",
         content="Original Content",
-        slug="original-title",
         author_id=user.id,
     )
 
@@ -41,6 +40,7 @@ def test_should_update_article_title():
     updated = updater.execute(article.id, {"title": "Updated Title"})
 
     assert updated.title == "Updated Title"
+    assert updated.slug == "updated-title"
     assert updated.description == "Original Summary"
 
 
@@ -54,13 +54,24 @@ def test_should_update_multiple_fields():
         {
             "title": "New Title",
             "content": "New Content",
-            "slug": "new-title",
         },
     )
 
     assert updated.title == "New Title"
     assert updated.content == "New Content"
     assert updated.slug == "new-title"
+
+
+def test_should_auto_generate_slug_when_title_changes():
+    article_repo, user_repo = _create_repositories()
+    article = _create_article(article_repo, user_repo)
+    updater = ArticleUpdater(article_repo)
+
+    assert article.slug == "original-title"
+
+    updated = updater.execute(article.id, {"title": "My New Amazing Title"})
+
+    assert updated.slug == "my-new-amazing-title"
 
 
 def test_should_raise_error_when_article_not_found():

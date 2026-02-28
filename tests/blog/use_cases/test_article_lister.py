@@ -35,9 +35,9 @@ def test_should_return_all_articles():
     user = _create_user(user_repo)
     creator = ArticleCreator(article_repo, user_repo)
 
-    creator.execute("First", "Summary 1", "Content 1", "first", user.id)
-    creator.execute("Second", "Summary 2", "Content 2", "second", user.id)
-    creator.execute("Third", "Summary 3", "Content 3", "third", user.id)
+    creator.execute("First", "Summary 1", "Content 1", user.id)
+    creator.execute("Second", "Summary 2", "Content 2", user.id)
+    creator.execute("Third", "Summary 3", "Content 3", user.id)
 
     lister = ArticleLister(article_repo)
     articles = lister.execute()

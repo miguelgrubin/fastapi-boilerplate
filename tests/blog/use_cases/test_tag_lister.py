@@ -21,9 +21,9 @@ def test_should_return_empty_list_when_no_tags():
 def test_should_return_all_tags():
     repo = _create_repositories()
     creator = TagCreator(repo)
-    creator.execute(name="Python", slug="python")
-    creator.execute(name="JavaScript", slug="javascript")
-    creator.execute(name="Rust", slug="rust")
+    creator.execute(name="Python")
+    creator.execute(name="JavaScript")
+    creator.execute(name="Rust")
 
     lister = TagLister(repo)
     tags = lister.execute()
@@ -34,7 +34,7 @@ def test_should_return_all_tags():
 def test_should_return_tags_with_correct_data():
     repo = _create_repositories()
     creator = TagCreator(repo)
-    creator.execute(name="Python", slug="python")
+    creator.execute(name="Python")
 
     lister = TagLister(repo)
     tags = lister.execute()

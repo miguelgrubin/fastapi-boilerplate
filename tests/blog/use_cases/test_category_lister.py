@@ -21,9 +21,9 @@ def test_should_return_empty_list_when_no_categories():
 def test_should_return_all_categories():
     repo = _create_repositories()
     creator = CategoryCreator(repo)
-    creator.execute(name="Technology", slug="technology")
-    creator.execute(name="Science", slug="science")
-    creator.execute(name="Sports", slug="sports")
+    creator.execute(name="Technology")
+    creator.execute(name="Science")
+    creator.execute(name="Sports")
 
     lister = CategoryLister(repo)
     categories = lister.execute()
@@ -34,7 +34,7 @@ def test_should_return_all_categories():
 def test_should_return_categories_with_correct_data():
     repo = _create_repositories()
     creator = CategoryCreator(repo)
-    creator.execute(name="Technology", slug="technology")
+    creator.execute(name="Technology")
 
     lister = CategoryLister(repo)
     categories = lister.execute()

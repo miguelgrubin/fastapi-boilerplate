@@ -10,6 +10,7 @@ from src.blog.domain.events.article_created import ArticleCreated
 from src.blog.domain.events.article_published import ArticlePublished
 from src.blog.domain.events.article_unpublished import ArticleUnpublished
 from src.blog.domain.events.article_updated import ArticleUpdated
+from src.blog.domain.value_objects.slug import Slug
 from src.shared.domain.domain_model import DomainModel
 
 
@@ -17,7 +18,6 @@ class ArticleUpdateParams(TypedDict, total=False):
     title: str
     description: str
     content: str
-    slug: str
     category_id: Optional[str]
     tags: List[str]
 
@@ -44,7 +44,6 @@ class Article(DomainModel):
         title: str,
         description: str,
         content: str,
-        slug: str,
         author_id: str,
         category_id: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -52,6 +51,7 @@ class Article(DomainModel):
         """Factory method to create a new article."""
         id = str(uuid4())
         now = datetime.now()
+        slug = Slug.from_name(title).value
         article = Article(
             id=id,
             title=title,
@@ -72,12 +72,11 @@ class Article(DomainModel):
         """Update article fields and refresh updated_at timestamp."""
         if title := payload.get("title"):
             self.title = title
+            self.slug = Slug.from_name(title).value
         if description := payload.get("description"):
             self.description = description
         if content := payload.get("content"):
             self.content = content
-        if slug := payload.get("slug"):
-            self.slug = slug
         if "category_id" in payload:
             self.category_id = payload["category_id"]
         if "tags" in payload:

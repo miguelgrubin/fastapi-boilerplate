@@ -31,7 +31,6 @@ def _create_comment(article_repo, comment_repo, user_repo):
         title="Test",
         description="Summary",
         content="Content",
-        slug="test",
         author_id=user.id,
     )
     creator = CommentCreator(comment_repo, article_repo, user_repo)

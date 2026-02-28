@@ -33,7 +33,6 @@ def _create_article(article_repo, user_repo, user):
         title="Test Article",
         description="Summary",
         content="Content",
-        slug="test-article",
         author_id=user.id,
     )
 
@@ -73,7 +72,6 @@ def test_should_not_return_comments_from_other_articles():
         title="Other Article",
         description="Other",
         content="Other",
-        slug="other-article",
         author_id=user.id,
     )
 

@@ -28,7 +28,6 @@ def _create_article(article_repo, user_repo):
         title="To Be Deleted",
         description="Summary",
         content="Content",
-        slug="to-be-deleted",
         author_id=user.id,
     )
 

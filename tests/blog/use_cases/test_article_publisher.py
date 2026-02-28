@@ -26,7 +26,6 @@ def _create_article(article_repo, user_repo):
         title="Draft Article",
         description="Summary",
         content="Content",
-        slug="draft-article",
         author_id=user.id,
     )
 

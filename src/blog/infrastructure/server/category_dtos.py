@@ -5,7 +5,6 @@ from pydantic import BaseModel
 
 class CategoryCreationDTO(BaseModel):
     name: str
-    slug: str
 
 
 class CategoryResponse(BaseModel):

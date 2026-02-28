@@ -36,7 +36,6 @@ def test_should_create_article_when_author_exists():
         title="My First Post",
         description="A short summary",
         content="Full article content here.",
-        slug="my-first-post",
         author_id=user.id,
     )
     assert article.id != ""
@@ -49,6 +48,17 @@ def test_should_create_article_when_author_exists():
     assert article.created_at is not None
 
 
+def test_should_generate_slug_from_title():
+    use_case, user = _create_use_case()
+    article = use_case.execute(
+        title="My fav post",
+        description="Summary",
+        content="Content",
+        author_id=user.id,
+    )
+    assert article.slug == "my-fav-post"
+
+
 def test_should_raise_error_when_author_not_found():
     use_case, _ = _create_use_case()
     with pytest.raises(UserNotFound):
@@ -56,7 +66,6 @@ def test_should_raise_error_when_author_not_found():
             title="My Post",
             description="Summary",
             content="Content",
-            slug="my-post",
             author_id="non-existent-author-id",
         )
 
@@ -68,7 +77,6 @@ def test_should_save_on_repository(mock_save):
         title="My Post",
         description="Summary",
         content="Content",
-        slug="my-post",
         author_id=user.id,
     )
     mock_save.assert_called()
@@ -80,7 +88,6 @@ def test_should_record_article_created_event():
         title="My Post",
         description="Summary",
         content="Content",
-        slug="my-post",
         author_id=user.id,
     )
     events = article.pull_domain_events()
@@ -94,7 +101,6 @@ def test_should_create_article_with_category_id():
         title="Categorized Post",
         description="Summary",
         content="Content",
-        slug="categorized-post",
         author_id=user.id,
         category_id="cat-123",
     )
@@ -107,7 +113,6 @@ def test_should_create_article_with_tags():
         title="Tagged Post",
         description="Summary",
         content="Content",
-        slug="tagged-post",
         author_id=user.id,
         tags=["tag-1", "tag-2", "tag-3"],
     )
@@ -120,7 +125,6 @@ def test_should_create_article_with_empty_tags_by_default():
         title="No Tags Post",
         description="Summary",
         content="Content",
-        slug="no-tags-post",
         author_id=user.id,
     )
     assert article.tags == []

@@ -10,6 +10,7 @@ sections:
   - Project Evaluation
   - Features
   - Rules
+  - Guides
 ---
 # Documentation
 
@@ -20,3 +21,4 @@ sections:
 - [Project Evaluation](05-project-evaluation.md)
 - [Features](features/00-index.md)
 - [Rules](rules/00-index.md)
+- [Guides](guides/00-index.md)

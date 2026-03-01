@@ -4,15 +4,17 @@ This document tracks planned improvements and missing implementations for the pr
 
 ## High Priority
 
-- [ ] Implement Authentication and Authorization using OpenID with Authelia and Traefik.
-- [ ] Use App Factory to create MCP Server, HTTP Server and cli commands.
+- [x] Implement Authentication and Authorization using OpenID with Authelia and Traefik.
+- [ ] Use App Factory to create MCP Server, HTTP Server and CLI commands.
 
 ## Medium Priority
 
-- [ ] Create Articles use case and related repository implementations.
-- [ ] Use SQLAlchemy and Alembic for database interactions and migrations.
+- [x] Create Articles use case and related repository implementations.
+- [x] Use SQLAlchemy and Alembic for database interactions and migrations.
 - [ ] Create SQL repository implementations for User and Article.
 - [ ] Create MCP Server with FastMCP
+- [x] Create HTTP Server with FastAPI
+- [ ] Create CLI commands for create and list users.
 
 ## Low Priority
 

@@ -2,11 +2,12 @@ from fastapi import FastAPI
 
 from src.blog.infrastructure.server.error_handler import blog_error_handler
 from src.blog.infrastructure.server.router import blog_routes
-from src.blog.infrastructure.storage.article_repository_memory import ArticleRepositoryMemory
-from src.blog.infrastructure.storage.category_repository_memory import CategoryRepositoryMemory
-from src.blog.infrastructure.storage.comment_repository_memory import CommentRepositoryMemory
-from src.blog.infrastructure.storage.tag_repository_memory import TagRepositoryMemory
-from src.blog.infrastructure.storage.user_repository_memory import UserRepositoryMemory
+from src.blog.infrastructure.storage.article_repository_sql import ArticleRepositorySql
+from src.blog.infrastructure.storage.category_repository_sql import CategoryRepositorySql
+from src.blog.infrastructure.storage.comment_repository_sql import CommentRepositorySql
+from src.blog.infrastructure.storage.sql_tables import metadata
+from src.blog.infrastructure.storage.tag_repository_sql import TagRepositorySql
+from src.blog.infrastructure.storage.user_repository_sql import UserRepositorySql
 from src.blog.types import (
     BlogRepositoriesType,
     BlogUseCasesType,
@@ -26,21 +27,25 @@ from src.blog.use_cases.tag_creator import TagCreator
 from src.blog.use_cases.tag_lister import TagLister
 from src.blog.use_cases.user_creator import UserCreator
 from src.blog.use_cases.user_deleter import UserDeleter
-from src.shared.factory import create_password_service
+from src.shared.domain.services.sql_service import SqlService
+from src.shared.factory import create_password_service, create_sql_service
 from src.shared.types import SharedServices
 
 
-def create_services() -> SharedServices:
-    return SharedServices(password_service=create_password_service("argon2"))
+def create_services(database_url: str) -> SharedServices:
+    return SharedServices(
+        password_service=create_password_service("argon2"),
+        sql_service=create_sql_service(database_url, metadata),
+    )
 
 
-def create_repositories() -> BlogRepositoriesType:
+def create_repositories(sql_service: SqlService) -> BlogRepositoriesType:
     return BlogRepositoriesType(
-        user_repository=UserRepositoryMemory(),
-        article_repository=ArticleRepositoryMemory(),
-        comment_repository=CommentRepositoryMemory(),
-        category_repository=CategoryRepositoryMemory(),
-        tag_repository=TagRepositoryMemory(),
+        user_repository=UserRepositorySql(sql_service),
+        article_repository=ArticleRepositorySql(sql_service),
+        comment_repository=CommentRepositorySql(sql_service),
+        category_repository=CategoryRepositorySql(sql_service),
+        tag_repository=TagRepositorySql(sql_service),
     )
 
 
@@ -108,7 +113,10 @@ def create_blog_http_server(app: FastAPI) -> None:
 
 
 def create_blog_module() -> tuple[SharedServices, BlogRepositoriesType, BlogUseCasesType]:
-    services = create_services()
-    repositories = create_repositories()
+    from src.settings import settings
+
+    database_url = str(settings.DATABASE_URL)
+    services = create_services(database_url)
+    repositories = create_repositories(services.sql_service)
     use_cases = create_use_cases(repositories, services)
     return services, repositories, use_cases

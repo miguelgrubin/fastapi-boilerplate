@@ -2,11 +2,11 @@ from fastapi import FastAPI
 
 from src.blog.infrastructure.server.error_handler import blog_error_handler
 from src.blog.infrastructure.server.router import blog_routes
-from src.blog.infrastructure.storage.article_repository_memory import ArticleRepositoryMemory
-from src.blog.infrastructure.storage.category_repository_memory import CategoryRepositoryMemory
-from src.blog.infrastructure.storage.comment_repository_memory import CommentRepositoryMemory
+from src.blog.infrastructure.storage.article_repository_sql import ArticleRepositorySql
+from src.blog.infrastructure.storage.category_repository_sql import CategoryRepositorySql
+from src.blog.infrastructure.storage.comment_repository_sql import CommentRepositorySql
 from src.blog.infrastructure.storage.sql_tables import metadata
-from src.blog.infrastructure.storage.tag_repository_memory import TagRepositoryMemory
+from src.blog.infrastructure.storage.tag_repository_sql import TagRepositorySql
 from src.blog.infrastructure.storage.user_repository_sql import UserRepositorySql
 from src.blog.types import (
     BlogRepositoriesType,
@@ -42,10 +42,10 @@ def create_services(database_url: str) -> SharedServices:
 def create_repositories(sql_service: SqlService) -> BlogRepositoriesType:
     return BlogRepositoriesType(
         user_repository=UserRepositorySql(sql_service),
-        article_repository=ArticleRepositoryMemory(),
-        comment_repository=CommentRepositoryMemory(),
-        category_repository=CategoryRepositoryMemory(),
-        tag_repository=TagRepositoryMemory(),
+        article_repository=ArticleRepositorySql(sql_service),
+        comment_repository=CommentRepositorySql(sql_service),
+        category_repository=CategoryRepositorySql(sql_service),
+        tag_repository=TagRepositorySql(sql_service),
     )
 
 

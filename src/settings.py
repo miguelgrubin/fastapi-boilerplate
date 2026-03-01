@@ -1,4 +1,3 @@
-from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,7 +6,7 @@ class ServerSettings(BaseSettings):
     PORT: int = 8000
     RELOAD: bool = False
     LOG_LEVEL: str = "info"
-    DATABASE_URL: PostgresDsn
+    DATABASE_URL: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -16,4 +15,4 @@ class ServerSettings(BaseSettings):
     )
 
 
-settings = ServerSettings()  # ty:ignore[missing-argument]
+settings = ServerSettings()

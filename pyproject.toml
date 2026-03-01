@@ -9,6 +9,7 @@ dependencies = [
   "fastapi[all]",
   "alembic",
   "sqlalchemy",
+  "psycopg2-binary",
   "rich",
   "typer",
   "arrow",

@@ -28,6 +28,9 @@ dev = [
   "freezegun",
 
   "coverage[toml]",
+
+  "mkdocs",
+  "mkdocs-material",
 ]
 
 [build-system]

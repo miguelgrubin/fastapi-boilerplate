@@ -1,34 +1,27 @@
----
-tags:
-  - guides
-  - infrastructure
-  - repositories
-  - sqlalchemy
----
-# How to Create SQL Repositories
+# Como Crear Repositorios SQL
 
-This guide walks through adding a new SQL-backed repository to the project. It uses the
-`Article` entity as a concrete example, since `UserRepositorySql` already exists as a reference
-implementation.
+Esta guia explica paso a paso como agregar un nuevo repositorio respaldado por SQL al proyecto.
+Usa la entidad `Article` como ejemplo concreto, ya que `UserRepositorySql` ya existe como
+implementacion de referencia.
 
-The pattern follows hexagonal architecture: the domain defines an abstract repository port (ABC),
-and we provide a concrete adapter in the infrastructure layer using SQLAlchemy Core.
+El patron sigue la arquitectura hexagonal: el dominio define un puerto de repositorio abstracto (ABC),
+y proporcionamos un adaptador concreto en la capa de infraestructura usando SQLAlchemy Core.
 
-## Prerequisites
+## Prerrequisitos
 
-Before starting, make sure:
+Antes de empezar, asegurate de que:
 
-- `SqlService` is wired in `src/shared/factory.py` and available via `SharedServices`
-- Alembic is configured (`alembic/` directory, `alembic.ini`)
-- You have read the existing reference implementation at
+- `SqlService` esta conectado en `src/shared/factory.py` y disponible via `SharedServices`
+- Alembic esta configurado (directorio `alembic/`, `alembic.ini`)
+- Has leido la implementacion de referencia existente en
   `src/blog/infrastructure/storage/user_repository_sql.py`
 
-## Step 1: Define the Table
+## Paso 1: Definir la Tabla
 
-All table definitions live in a single file: `src/blog/infrastructure/storage/sql_tables.py`.
-This module exports a shared `metadata` object that Alembic uses for auto-generating migrations.
+Todas las definiciones de tablas viven en un unico archivo: `src/blog/infrastructure/storage/sql_tables.py`.
+Este modulo exporta un objeto `metadata` compartido que Alembic usa para auto-generar migraciones.
 
-Add your new table below the existing ones:
+Agrega tu nueva tabla debajo de las existentes:
 
 ```python
 # src/blog/infrastructure/storage/sql_tables.py
@@ -46,7 +39,7 @@ from sqlalchemy import (
 
 metadata = MetaData()
 
-# ... existing users_table ...
+# ... users_table existente ...
 
 articles_table = Table(
     "articles",
@@ -65,24 +58,24 @@ articles_table = Table(
 )
 ```
 
-### Column type mapping
+### Mapeo de tipos de columna
 
-| Python / Domain type | SQLAlchemy column type | Notes |
-|----------------------|------------------------|-------|
-| `str`                | `String`               | General-purpose text |
-| `str` (long text)    | `Text`                 | Use for content/body fields |
-| `bool`               | `Boolean`              | SQLite stores as 0/1 |
-| `datetime`           | `DateTime`             | Must be `datetime` objects, not strings |
-| `Optional[str]`      | `String, nullable=True`| `None` maps to SQL `NULL` |
-| `List[str]`          | `JSON`                 | Serialized as JSON; see gotchas below |
+| Tipo Python / Dominio  | Tipo de columna SQLAlchemy | Notas |
+|-------------------------|----------------------------|-------|
+| `str`                   | `String`                   | Texto de proposito general |
+| `str` (texto largo)     | `Text`                     | Usar para campos de contenido/cuerpo |
+| `bool`                  | `Boolean`                  | SQLite almacena como 0/1 |
+| `datetime`              | `DateTime`                 | Deben ser objetos `datetime`, no strings |
+| `Optional[str]`         | `String, nullable=True`    | `None` se mapea a SQL `NULL` |
+| `List[str]`             | `JSON`                     | Serializado como JSON; ver notas abajo |
 
-## Step 2: Create the Repository Class
+## Paso 2: Crear la Clase del Repositorio
 
-Create a new file at `src/blog/infrastructure/storage/article_repository_sql.py`.
+Crea un nuevo archivo en `src/blog/infrastructure/storage/article_repository_sql.py`.
 
-The repository receives `SqlService` via constructor injection and uses it for all database
-access. Every operation runs inside a `with self._sql_service.session() as conn:` block, which
-auto-commits on success and auto-rolls-back on exception.
+El repositorio recibe `SqlService` via inyeccion en el constructor y lo usa para todo el acceso
+a la base de datos. Cada operacion se ejecuta dentro de un bloque `with self._sql_service.session() as conn:`,
+que hace auto-commit en caso de exito y auto-rollback en caso de excepcion.
 
 ```python
 # src/blog/infrastructure/storage/article_repository_sql.py
@@ -150,7 +143,7 @@ class ArticleRepositorySql(ArticleRepository):
 
     @staticmethod
     def _to_row(article: Article) -> dict:
-        """Map a domain Article entity to a database row dictionary."""
+        """Mapea una entidad Article del dominio a un diccionario de fila de base de datos."""
         return {
             "id": article.id,
             "title": article.title,
@@ -167,7 +160,7 @@ class ArticleRepositorySql(ArticleRepository):
 
     @staticmethod
     def _to_entity(row) -> Article:  # type: ignore[no-untyped-def]
-        """Map a database row to a domain Article entity."""
+        """Mapea una fila de base de datos a una entidad Article del dominio."""
         tags = row.tags
         if isinstance(tags, str):
             tags = json.loads(tags)
@@ -187,25 +180,25 @@ class ArticleRepositorySql(ArticleRepository):
         )
 ```
 
-### Key patterns in the mapper methods
+### Patrones clave en los metodos mapper
 
-**`_to_row()` (entity -> database)**
-- JSON list fields (`tags`) must be serialized with `json.dumps()` because SQLite stores JSON
-  as plain text strings.
-- `bool` fields are stored natively -- SQLAlchemy handles the Python `bool` to SQL integer
-  mapping.
-- `datetime` fields must remain as `datetime` objects. Do not convert them to strings.
+**`_to_row()` (entidad -> base de datos)**
+- Los campos de lista JSON (`tags`) deben serializarse con `json.dumps()` porque SQLite almacena JSON
+  como cadenas de texto plano.
+- Los campos `bool` se almacenan nativamente -- SQLAlchemy maneja el mapeo de `bool` de Python a entero
+  SQL.
+- Los campos `datetime` deben permanecer como objetos `datetime`. No los conviertas a strings.
 
-**`_to_entity()` (database -> entity)**
-- JSON fields need defensive deserialization: check `isinstance(value, str)` before calling
-  `json.loads()`. PostgreSQL returns native Python lists from JSON columns, but SQLite returns
+**`_to_entity()` (base de datos -> entidad)**
+- Los campos JSON necesitan deserializacion defensiva: verifica `isinstance(value, str)` antes de llamar
+  a `json.loads()`. PostgreSQL devuelve listas nativas de Python desde columnas JSON, pero SQLite devuelve
   strings.
-- `bool` fields: wrap with `bool()` to normalize SQLite's 0/1 integers back to Python booleans.
-- Nullable fields (`category_id`) map directly -- `NULL` becomes `None`.
+- Campos `bool`: envuelve con `bool()` para normalizar los enteros 0/1 de SQLite de vuelta a booleanos de Python.
+- Campos nullables (`category_id`) se mapean directamente -- `NULL` se convierte en `None`.
 
-## Step 3: Wire It in the Factory
+## Paso 3: Conectarlo en la Factory
 
-In `src/blog/factory.py`, replace the in-memory implementation with the SQL one:
+En `src/blog/factory.py`, reemplaza la implementacion en memoria con la SQL:
 
 ```python
 # src/blog/factory.py
@@ -215,35 +208,35 @@ from src.blog.infrastructure.storage.article_repository_sql import ArticleReposi
 def create_repositories(sql_service: SqlService) -> BlogRepositoriesType:
     return BlogRepositoriesType(
         user_repository=UserRepositorySql(sql_service),
-        article_repository=ArticleRepositorySql(sql_service),  # was ArticleRepositoryMemory()
+        article_repository=ArticleRepositorySql(sql_service),  # antes era ArticleRepositoryMemory()
         comment_repository=CommentRepositoryMemory(),
         category_repository=CategoryRepositoryMemory(),
         tag_repository=TagRepositoryMemory(),
     )
 ```
 
-The hexagonal architecture means no other code needs to change -- use cases depend on the
-`ArticleRepository` ABC, not the concrete class.
+La arquitectura hexagonal significa que ningun otro codigo necesita cambiar -- los casos de uso dependen del
+ABC `ArticleRepository`, no de la clase concreta.
 
-## Step 4: Generate and Run the Migration
+## Paso 4: Generar y Ejecutar la Migracion
 
 ```bash
-# Generate a migration from the table diff
+# Generar una migracion a partir del diff de tablas
 make migrate-create m="add articles table"
 
-# Review the generated file in alembic/versions/
-# Then apply it
+# Revisar el archivo generado en alembic/versions/
+# Luego aplicarla
 make migrate
 ```
 
-Always review the auto-generated migration before running it. Alembic compares the `metadata`
-object in `sql_tables.py` against the current database schema and generates the diff.
+Siempre revisa la migracion auto-generada antes de ejecutarla. Alembic compara el objeto `metadata`
+en `sql_tables.py` contra el esquema actual de la base de datos y genera el diff.
 
-## Step 5: Write Tests
+## Paso 5: Escribir Tests
 
-Tests use an in-memory SQLite database so no external database is needed.
+Los tests usan una base de datos SQLite en memoria, por lo que no se necesita una base de datos externa.
 
-Create `tests/blog/infrastructure/storage/test_article_repository_sql.py`:
+Crea `tests/blog/infrastructure/storage/test_article_repository_sql.py`:
 
 ```python
 import pytest
@@ -256,7 +249,7 @@ from src.shared.infrastructure.services.sql_service_sqlalchemy import SqlService
 
 @pytest.fixture
 def sql_service():
-    """Create a SqlService backed by an in-memory SQLite database."""
+    """Crea un SqlService respaldado por una base de datos SQLite en memoria."""
     service = SqlServiceSqlAlchemy("sqlite:///:memory:", metadata)
     service.connect()
     metadata.create_all(service._engine)
@@ -342,28 +335,28 @@ def test_should_persist_published_state(repository):
     assert found.published is True
 ```
 
-Run the tests:
+Ejecuta los tests:
 
 ```bash
 uv run pytest tests/blog/infrastructure/storage/test_article_repository_sql.py -v
 ```
 
-### Test fixture pattern
+### Patron de fixtures de test
 
-The fixture creates a fresh in-memory SQLite database for each test:
+El fixture crea una base de datos SQLite en memoria fresca para cada test:
 
-1. `SqlServiceSqlAlchemy("sqlite:///:memory:", metadata)` -- creates the engine
-2. `service.connect()` -- connects to the database
-3. `metadata.create_all(service._engine)` -- creates all tables defined in `sql_tables.py`
-4. The test runs against a clean database
-5. `service.disconnect()` -- tears down the connection (the in-memory DB is discarded)
+1. `SqlServiceSqlAlchemy("sqlite:///:memory:", metadata)` -- crea el motor
+2. `service.connect()` -- se conecta a la base de datos
+3. `metadata.create_all(service._engine)` -- crea todas las tablas definidas en `sql_tables.py`
+4. El test se ejecuta contra una base de datos limpia
+5. `service.disconnect()` -- destruye la conexion (la BD en memoria se descarta)
 
-## Tips and Gotchas
+## Consejos y Notas Importantes
 
-### JSON columns across databases
+### Columnas JSON entre bases de datos
 
-SQLite stores JSON columns as plain text strings, while PostgreSQL uses native JSON. The
-`_to_entity()` mapper handles this with a type check:
+SQLite almacena columnas JSON como cadenas de texto plano, mientras que PostgreSQL usa JSON nativo. El
+mapper `_to_entity()` maneja esto con una verificacion de tipo:
 
 ```python
 tags = row.tags
@@ -371,24 +364,24 @@ if isinstance(tags, str):
     tags = json.loads(tags)
 ```
 
-Always include this guard so your code works on both SQLite (tests) and PostgreSQL (production).
+Incluye siempre esta verificacion para que tu codigo funcione tanto en SQLite (tests) como en PostgreSQL (produccion).
 
-### DateTime columns
+### Columnas DateTime
 
-SQLAlchemy `DateTime` columns expect Python `datetime` objects. Never pass date strings --
-SQLite will silently store them as text, and queries will behave unexpectedly.
+Las columnas `DateTime` de SQLAlchemy esperan objetos `datetime` de Python. Nunca pases cadenas de fecha --
+SQLite las almacenara silenciosamente como texto, y las consultas se comportaran de forma inesperada.
 
-### Upsert pattern
+### Patron Upsert
 
-The `save()` method uses a SELECT-then-INSERT-or-UPDATE pattern. This works reliably for
-single-writer scenarios. If you need true database-level upserts for concurrent writes,
-consider using dialect-specific `INSERT ... ON CONFLICT` via
-`sqlalchemy.dialects.postgresql.insert` or `sqlalchemy.dialects.sqlite.insert`.
+El metodo `save()` usa un patron SELECT-luego-INSERT-o-UPDATE. Esto funciona de forma fiable para
+escenarios de escritor unico. Si necesitas upserts reales a nivel de base de datos para escrituras
+concurrentes, considera usar `INSERT ... ON CONFLICT` especifico del dialecto via
+`sqlalchemy.dialects.postgresql.insert` o `sqlalchemy.dialects.sqlite.insert`.
 
-### Adding filters to `find_all()`
+### Agregar filtros a `find_all()`
 
-The `find_filters` dict is passed from the use case layer. Extend the query with WHERE
-clauses based on the filter keys:
+El diccionario `find_filters` se pasa desde la capa de casos de uso. Extiende la consulta con clausulas
+WHERE basadas en las claves del filtro:
 
 ```python
 def find_all(
@@ -409,10 +402,10 @@ def find_all(
         return [self._to_entity(row) for row in rows]
 ```
 
-## Reference
+## Referencia
 
-- Existing implementation: `src/blog/infrastructure/storage/user_repository_sql.py`
-- Table definitions: `src/blog/infrastructure/storage/sql_tables.py`
-- SqlService port: `src/shared/domain/services/sql_service.py`
-- SqlService implementation: `src/shared/infrastructure/services/sql_service_sqlalchemy.py`
-- Test example: `tests/blog/infrastructure/storage/test_user_repository_sql.py`
+- Implementacion existente: `src/blog/infrastructure/storage/user_repository_sql.py`
+- Definiciones de tablas: `src/blog/infrastructure/storage/sql_tables.py`
+- Puerto SqlService: `src/shared/domain/services/sql_service.py`
+- Implementacion SqlService: `src/shared/infrastructure/services/sql_service_sqlalchemy.py`
+- Ejemplo de test: `tests/blog/infrastructure/storage/test_user_repository_sql.py`

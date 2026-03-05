@@ -6,6 +6,57 @@
 - uv (for managing dependencies and virtual environments)
 - mkcert (for generating local TLS certificates)
 
+## Available Commands
+
+### Setup
+
+| Command | Description |
+|---------|-------------|
+| `make install-uv` | Install the uv package manager |
+| `make install` | Install all dependencies (`uv sync --all-extras`) |
+
+### Development
+
+| Command | Description |
+|---------|-------------|
+| `make start` | Start the development server with hot reload |
+| `make format` | Auto-format code with ruff |
+| `make format-check` | Check formatting without modifying files |
+| `make lint` | Run pylint on source code |
+| `make typecheck` | Run ty type checker on `src/` |
+
+### Testing
+
+| Command | Description |
+|---------|-------------|
+| `make test` | Run all tests with pytest |
+| `make coverage` | Run tests and display coverage report |
+| `make coverage-html` | Run tests and generate HTML coverage report in `htmlcov/` |
+
+### Database
+
+| Command | Description |
+|---------|-------------|
+| `make migrate` | Apply all pending migrations (`alembic upgrade head`) |
+| `make migrate-create m="description"` | Generate a new migration from model changes |
+| `make migrate-downgrade` | Rollback the last migration |
+| `make migrate-history` | Show migration history |
+
+### Documentation
+
+| Command | Description |
+|---------|-------------|
+| `make docs` | Build documentation for all languages (EN + ES) |
+| `make docs-serve` | Serve English documentation locally at `http://127.0.0.1:8000` |
+| `make docs-serve-es` | Serve Spanish documentation locally at `http://127.0.0.1:8000` |
+
+### Infrastructure
+
+| Command | Description |
+|---------|-------------|
+| `make certs` | Generate local TLS certificates with mkcert |
+| `make clean` | Remove all build artifacts, caches, and temporary files |
+
 ## Docker Development
 
 Run the full stack with Traefik, Authelia, PostgreSQL, and Redis:

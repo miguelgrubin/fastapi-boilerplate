@@ -1,0 +1,52 @@
+site_name: FastAPI Boilerplate
+site_description: A FastAPI boilerplate using Hexagonal Architecture with Domain-Driven Design patterns.
+
+docs_dir: docs/en
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.code.annotate
+    - search.highlight
+    - search.suggest
+
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Decisions: decisions.md
+  - Tasks: tasks.md
+  - Issues: issues.md
+  - Features:
+    - features/index.md
+    - Users: features/users.md
+    - Articles: features/articles.md
+  - Guides:
+    - guides/index.md
+    - How to Create Repositories: guides/how-to-create-repositories.md
+  - Rules: rules/index.md
+
+extra:
+  alternate:
+    - name: English
+      link: /
+      lang: en
+    - name: Espanol
+      link: /es/
+      lang: es
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
+  - def_list
+  - tables

@@ -19,14 +19,8 @@ nav:
   - Home: index.md
   - Architecture: architecture.md
   - Decisions: decisions.md
-  - Tasks: tasks.md
   - Issues: issues.md
-  - Features:
-    - features/index.md
-    - Users: features/users.md
-    - Articles: features/articles.md
   - Guides:
-    - guides/index.md
     - How to Create Repositories: guides/how-to-create-repositories.md
   - Rules: rules/index.md
 

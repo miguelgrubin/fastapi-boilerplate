@@ -40,7 +40,6 @@ Decision:
 - Use PostgreSQL as the primary relational database
 - Use pgvector extension for vector similarity search and embeddings
 - Use SQLAlchemy as the ORM layer
-- Use asyncpg driver for async database connections
 - Use Alembic for database migrations
 
 Alternatives considered:

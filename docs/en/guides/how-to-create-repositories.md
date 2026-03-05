@@ -6,6 +6,9 @@ implementation.
 
 The pattern follows hexagonal architecture: the domain defines an abstract repository port (ABC),
 and we provide a concrete adapter in the infrastructure layer using SQLAlchemy Core.
+```python
+from abc import ABC, abstractmethod
+```
 
 ## Prerequisites
 

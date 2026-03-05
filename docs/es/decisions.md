@@ -40,7 +40,6 @@ Decision:
 - Usar PostgreSQL como base de datos relacional principal
 - Usar la extension pgvector para busqueda de similitud vectorial y embeddings
 - Usar SQLAlchemy como capa ORM
-- Usar el driver asyncpg para conexiones asincronas a la base de datos
 - Usar Alembic para migraciones de base de datos
 
 Alternativas consideradas:

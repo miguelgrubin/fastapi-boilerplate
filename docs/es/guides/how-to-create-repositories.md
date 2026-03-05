@@ -1,11 +1,15 @@
 # Como Crear Repositorios SQL
 
-Esta guia explica paso a paso como agregar un nuevo repositorio respaldado por SQL al proyecto.
+Esta guia explica paso a paso como agregar un nuevo repositorio SQL al proyecto.
 Usa la entidad `Article` como ejemplo concreto, ya que `UserRepositorySql` ya existe como
 implementacion de referencia.
 
 El patron sigue la arquitectura hexagonal: el dominio define un puerto de repositorio abstracto (ABC),
 y proporcionamos un adaptador concreto en la capa de infraestructura usando SQLAlchemy Core.
+
+```python
+from abc import ABC, abstractmethod
+```
 
 ## Prerrequisitos
 

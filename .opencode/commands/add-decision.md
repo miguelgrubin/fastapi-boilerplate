@@ -2,7 +2,7 @@
 description: Add a new ADR to the decisions document
 ---
 
-I need to add a new Architectural Decision Record to @docs/02-decisions.md.
+I need to add a new Architectural Decision Record to @docs/en/decisions.md.
 
 Please guide me through creating this ADR interactively:
 

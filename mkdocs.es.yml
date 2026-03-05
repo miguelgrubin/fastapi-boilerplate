@@ -1,0 +1,19 @@
+INHERIT: mkdocs.yml
+
+site_name: FastAPI Boilerplate
+site_description: Un boilerplate de FastAPI con Arquitectura Hexagonal y patrones de Domain-Driven Design.
+
+docs_dir: docs/es
+site_dir: site/es
+
+theme:
+  name: material
+  language: es
+
+nav:
+  - Inicio: index.md
+  - Arquitectura: architecture.md
+  - Decisiones: decisions.md
+  - Guias:
+    - Como Crear Repositorios: guides/how-to-create-repositories.md
+  - Reglas: rules/index.md

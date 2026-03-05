@@ -75,3 +75,20 @@ certs:
 	       -key-file docker/traefik/certs/local.key \
 	       "*.localtest.me" "localtest.me"
 	@echo "Certificates generated in docker/traefik/certs/"
+
+.PHONY: docs
+docs:
+	uv run mkdocs build
+	uv run mkdocs build -f mkdocs.es.yml
+
+.PHONY: openapi
+openapi:
+	uv run python main.py export-openapi
+
+.PHONY: docs-serve
+docs-serve:
+	uv run mkdocs serve
+
+.PHONY: docs-serve-es
+docs-serve-es:
+	uv run mkdocs serve -f mkdocs.es.yml

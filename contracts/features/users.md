@@ -1,10 +1,3 @@
----
-tags:
-  - features
-  - users
-  - authentication
-  - authorization
----
 # Users
 
 - Registration and Authentication

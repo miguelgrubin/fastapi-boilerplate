@@ -81,6 +81,10 @@ docs:
 	uv run mkdocs build
 	uv run mkdocs build -f mkdocs.es.yml
 
+.PHONY: openapi
+openapi:
+	uv run python main.py export-openapi
+
 .PHONY: docs-serve
 docs-serve:
 	uv run mkdocs serve

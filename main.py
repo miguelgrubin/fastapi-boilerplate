@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import typer
 import uvicorn
+import yaml
 from src.settings import settings
 
 app = typer.Typer()
@@ -15,6 +18,17 @@ def http_server():
         reload=settings.RELOAD,
         log_level=settings.LOG_LEVEL,
     )
+
+
+@app.command()
+def export_openapi():
+    from src.http_server import app as fastapi_app
+
+    schema = fastapi_app.openapi()
+    output = Path("contracts/api/openapi.yml")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(yaml.dump(schema, sort_keys=False, allow_unicode=True))
+    print(f"OpenAPI spec exported to {output}")
 
 
 @app.command()

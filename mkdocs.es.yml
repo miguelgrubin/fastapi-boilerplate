@@ -14,7 +14,6 @@ nav:
   - Inicio: index.md
   - Arquitectura: architecture.md
   - Decisiones: decisions.md
-  - Incidencias: issues.md
   - Guias:
     - Como Crear Repositorios: guides/how-to-create-repositories.md
   - Reglas: rules/index.md

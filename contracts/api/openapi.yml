@@ -1,0 +1,720 @@
+openapi: 3.1.0
+info:
+  title: FastAPI
+  version: 0.1.0
+paths:
+  /checkhealth:
+    get:
+      summary: Checkhealth
+      operationId: checkhealth_checkhealth_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /app/v1/blog/users:
+    post:
+      summary: Create User
+      operationId: create_user_app_v1_blog_users_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreationDTO'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /admin/v1/blog/users/{user_id}:
+    delete:
+      summary: Delete User
+      operationId: delete_user_admin_v1_blog_users__user_id__delete
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: User Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /app/v1/blog/articles:
+    get:
+      summary: List Articles
+      operationId: list_articles_app_v1_blog_articles_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ArticleResponse'
+                type: array
+                title: Response List Articles App V1 Blog Articles Get
+    post:
+      summary: Create Article
+      operationId: create_article_app_v1_blog_articles_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleCreationDTO'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /app/v1/blog/articles/{article_id}:
+    get:
+      summary: Get Article
+      operationId: get_article_app_v1_blog_articles__article_id__get
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Article Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      summary: Update Article
+      operationId: update_article_app_v1_blog_articles__article_id__put
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Article Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleUpdateDTO'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      summary: Delete Article
+      operationId: delete_article_app_v1_blog_articles__article_id__delete
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Article Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /app/v1/blog/articles/slug/{slug}:
+    get:
+      summary: Get Article By Slug
+      operationId: get_article_by_slug_app_v1_blog_articles_slug__slug__get
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Slug
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /app/v1/blog/articles/{article_id}/publish:
+    post:
+      summary: Publish Article
+      operationId: publish_article_app_v1_blog_articles__article_id__publish_post
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Article Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /app/v1/blog/articles/{article_id}/unpublish:
+    post:
+      summary: Unpublish Article
+      operationId: unpublish_article_app_v1_blog_articles__article_id__unpublish_post
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Article Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /app/v1/blog/articles/{article_id}/comments:
+    post:
+      summary: Create Comment
+      operationId: create_comment_app_v1_blog_articles__article_id__comments_post
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Article Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreationDTO'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      summary: List Comments
+      operationId: list_comments_app_v1_blog_articles__article_id__comments_get
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Article Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentResponse'
+                title: Response List Comments App V1 Blog Articles  Article Id  Comments
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /app/v1/blog/comments/{comment_id}:
+    delete:
+      summary: Delete Comment
+      operationId: delete_comment_app_v1_blog_comments__comment_id__delete
+      parameters:
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Comment Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /app/v1/blog/categories:
+    get:
+      summary: List Categories
+      operationId: list_categories_app_v1_blog_categories_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CategoryResponse'
+                type: array
+                title: Response List Categories App V1 Blog Categories Get
+    post:
+      summary: Create Category
+      operationId: create_category_app_v1_blog_categories_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryCreationDTO'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /app/v1/blog/tags:
+    get:
+      summary: List Tags
+      operationId: list_tags_app_v1_blog_tags_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TagResponse'
+                type: array
+                title: Response List Tags App V1 Blog Tags Get
+    post:
+      summary: Create Tag
+      operationId: create_tag_app_v1_blog_tags_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagCreationDTO'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ArticleCreationDTO:
+      properties:
+        title:
+          type: string
+          title: Title
+        description:
+          type: string
+          title: Description
+        content:
+          type: string
+          title: Content
+        author_id:
+          type: string
+          title: Author Id
+        category_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category Id
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+          default: []
+      type: object
+      required:
+      - title
+      - description
+      - content
+      - author_id
+      title: ArticleCreationDTO
+    ArticleResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        title:
+          type: string
+          title: Title
+        description:
+          type: string
+          title: Description
+        content:
+          type: string
+          title: Content
+        slug:
+          type: string
+          title: Slug
+        author_id:
+          type: string
+          title: Author Id
+        published:
+          type: boolean
+          title: Published
+        category_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category Id
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+          default: []
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - title
+      - description
+      - content
+      - slug
+      - author_id
+      - published
+      - created_at
+      - updated_at
+      title: ArticleResponse
+    ArticleUpdateDTO:
+      properties:
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content
+        category_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category Id
+        tags:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+      type: object
+      title: ArticleUpdateDTO
+    CategoryCreationDTO:
+      properties:
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - name
+      title: CategoryCreationDTO
+    CategoryResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        slug:
+          type: string
+          title: Slug
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - name
+      - slug
+      - created_at
+      title: CategoryResponse
+    CommentCreationDTO:
+      properties:
+        content:
+          type: string
+          title: Content
+        author_id:
+          type: string
+          title: Author Id
+      type: object
+      required:
+      - content
+      - author_id
+      title: CommentCreationDTO
+    CommentResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        content:
+          type: string
+          title: Content
+        author_id:
+          type: string
+          title: Author Id
+        article_id:
+          type: string
+          title: Article Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - content
+      - author_id
+      - article_id
+      - created_at
+      - updated_at
+      title: CommentResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ProfileResponse:
+      properties:
+        bio:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bio
+        image:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image
+      type: object
+      title: ProfileResponse
+    TagCreationDTO:
+      properties:
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - name
+      title: TagCreationDTO
+    TagResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        slug:
+          type: string
+          title: Slug
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - name
+      - slug
+      - created_at
+      title: TagResponse
+    UserCreationDTO:
+      properties:
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
+        email:
+          type: string
+          title: Email
+      type: object
+      required:
+      - username
+      - password
+      - email
+      title: UserCreationDTO
+    UserResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        email:
+          type: string
+          title: Email
+        username:
+          type: string
+          title: Username
+        profile:
+          $ref: '#/components/schemas/ProfileResponse'
+        following:
+          items:
+            type: string
+          type: array
+          title: Following
+          default: []
+        followers:
+          items:
+            type: string
+          type: array
+          title: Followers
+          default: []
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - email
+      - username
+      - profile
+      - updated_at
+      - created_at
+      title: UserResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

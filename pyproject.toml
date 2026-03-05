@@ -15,6 +15,7 @@ dependencies = [
   "arrow",
   "pwdlib[argon2]",
   "pydantic",
+  "pyyaml>=6.0.3",
 ]
 
 [project.optional-dependencies]

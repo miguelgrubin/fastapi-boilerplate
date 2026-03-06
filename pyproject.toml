@@ -16,6 +16,10 @@ dependencies = [
   "pwdlib[argon2]",
   "pydantic",
   "pyyaml>=6.0.3",
+  "authlib",
+  "httpx",
+  "casbin",
+  "itsdangerous",
 ]
 
 [project.optional-dependencies]

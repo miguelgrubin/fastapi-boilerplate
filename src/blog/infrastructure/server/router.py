@@ -1,6 +1,6 @@
 from typing import List, cast
 
-from fastapi import FastAPI, Response
+from fastapi import Depends, FastAPI, Response
 from src.blog.domain.article import ArticleUpdateParams
 from src.blog.infrastructure.mappers.article_mapper import ArticleMapper
 from src.blog.infrastructure.mappers.category_mapper import CategoryMapper
@@ -12,6 +12,9 @@ from src.blog.infrastructure.server.article_dtos import (
     ArticleResponse,
     ArticleUpdateDTO,
 )
+from src.blog.infrastructure.server.auth_dependencies import (
+    create_require_authorization,
+)
 from src.blog.infrastructure.server.category_dtos import (
     CategoryCreationDTO,
     CategoryResponse,
@@ -22,19 +25,37 @@ from src.blog.infrastructure.server.user_dtos import UserCreationDTO, UserRespon
 from src.blog.types import BlogUseCasesType
 from src.blog.use_cases.user_creator import UserCreator
 from src.blog.use_cases.user_deleter import UserDeleter
+from src.shared.domain.authenticated_user import AuthenticatedUser
+from src.shared.domain.services.authentication_service import AuthenticationService
+from src.shared.domain.services.authorization_service import AuthorizationService
 
 
-def blog_routes(app: FastAPI, use_cases: BlogUseCasesType) -> None:
+def blog_routes(
+    app: FastAPI,
+    use_cases: BlogUseCasesType,
+    authentication_service: AuthenticationService,
+    authorization_service: AuthorizationService,
+) -> None:
+    require_authorization = create_require_authorization(
+        authorization_service, authentication_service
+    )
+
     # ---- User routes ----
 
     @app.post("/app/v1/blog/users", response_model=UserResponse)
-    def create_user(payload: UserCreationDTO) -> UserResponse:
+    def create_user(
+        payload: UserCreationDTO,
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/users", "write")),
+    ) -> UserResponse:
         use_case: UserCreator = use_cases.user_creator
         user = use_case.execute(payload.username, payload.password, payload.email)
         return UserMapper.to_dto(user)
 
     @app.delete("/admin/v1/blog/users/{user_id}", status_code=204)
-    def delete_user(user_id: str) -> Response:
+    def delete_user(
+        user_id: str,
+        _user: AuthenticatedUser = Depends(require_authorization("/admin/v1/blog/users", "write")),
+    ) -> Response:
         use_case: UserDeleter = use_cases.user_deleter
         use_case.execute(user_id)
         return Response(status_code=204)
@@ -42,7 +63,10 @@ def blog_routes(app: FastAPI, use_cases: BlogUseCasesType) -> None:
     # ---- Article routes ----
 
     @app.post("/app/v1/blog/articles", response_model=ArticleResponse, status_code=201)
-    def create_article(payload: ArticleCreationDTO) -> ArticleResponse:
+    def create_article(
+        payload: ArticleCreationDTO,
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/articles", "write")),
+    ) -> ArticleResponse:
         article = use_cases.article_creator.execute(
             title=payload.title,
             description=payload.description,
@@ -54,38 +78,59 @@ def blog_routes(app: FastAPI, use_cases: BlogUseCasesType) -> None:
         return ArticleMapper.to_dto(article)
 
     @app.get("/app/v1/blog/articles", response_model=List[ArticleResponse])
-    def list_articles() -> List[ArticleResponse]:
+    def list_articles(
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/articles", "read")),
+    ) -> List[ArticleResponse]:
         articles = use_cases.article_lister.execute()
         return [ArticleMapper.to_dto(article) for article in articles]
 
     @app.get("/app/v1/blog/articles/{article_id}", response_model=ArticleResponse)
-    def get_article(article_id: str) -> ArticleResponse:
+    def get_article(
+        article_id: str,
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/articles", "read")),
+    ) -> ArticleResponse:
         article = use_cases.article_finder.execute(article_id)
         return ArticleMapper.to_dto(article)
 
     @app.get("/app/v1/blog/articles/slug/{slug}", response_model=ArticleResponse)
-    def get_article_by_slug(slug: str) -> ArticleResponse:
+    def get_article_by_slug(
+        slug: str,
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/articles", "read")),
+    ) -> ArticleResponse:
         article = use_cases.article_finder.execute_by_slug(slug)
         return ArticleMapper.to_dto(article)
 
     @app.put("/app/v1/blog/articles/{article_id}", response_model=ArticleResponse)
-    def update_article(article_id: str, payload: ArticleUpdateDTO) -> ArticleResponse:
+    def update_article(
+        article_id: str,
+        payload: ArticleUpdateDTO,
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/articles", "write")),
+    ) -> ArticleResponse:
         update_params = cast(ArticleUpdateParams, payload.model_dump(exclude_none=True))
         article = use_cases.article_updater.execute(article_id, update_params)
         return ArticleMapper.to_dto(article)
 
     @app.delete("/app/v1/blog/articles/{article_id}", status_code=204)
-    def delete_article(article_id: str) -> Response:
+    def delete_article(
+        article_id: str,
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/articles", "write")),
+    ) -> Response:
         use_cases.article_deleter.execute(article_id)
         return Response(status_code=204)
 
     @app.post("/app/v1/blog/articles/{article_id}/publish", response_model=ArticleResponse)
-    def publish_article(article_id: str) -> ArticleResponse:
+    def publish_article(
+        article_id: str,
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/articles", "write")),
+    ) -> ArticleResponse:
         article = use_cases.article_publisher.execute(article_id)
         return ArticleMapper.to_dto(article)
 
     @app.post("/app/v1/blog/articles/{article_id}/unpublish", response_model=ArticleResponse)
-    def unpublish_article(article_id: str) -> ArticleResponse:
+    def unpublish_article(
+        article_id: str,
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/articles", "write")),
+    ) -> ArticleResponse:
         article = use_cases.article_publisher.unpublish(article_id)
         return ArticleMapper.to_dto(article)
 
@@ -96,7 +141,13 @@ def blog_routes(app: FastAPI, use_cases: BlogUseCasesType) -> None:
         response_model=CommentResponse,
         status_code=201,
     )
-    def create_comment(article_id: str, payload: CommentCreationDTO) -> CommentResponse:
+    def create_comment(
+        article_id: str,
+        payload: CommentCreationDTO,
+        _user: AuthenticatedUser = Depends(
+            require_authorization("/app/v1/blog/articles/*/comments", "write")
+        ),
+    ) -> CommentResponse:
         comment = use_cases.comment_creator.execute(
             content=payload.content,
             author_id=payload.author_id,
@@ -108,12 +159,20 @@ def blog_routes(app: FastAPI, use_cases: BlogUseCasesType) -> None:
         "/app/v1/blog/articles/{article_id}/comments",
         response_model=List[CommentResponse],
     )
-    def list_comments(article_id: str) -> List[CommentResponse]:
+    def list_comments(
+        article_id: str,
+        _user: AuthenticatedUser = Depends(
+            require_authorization("/app/v1/blog/articles/*/comments", "read")
+        ),
+    ) -> List[CommentResponse]:
         comments = use_cases.comment_lister.execute(article_id)
         return [CommentMapper.to_dto(comment) for comment in comments]
 
     @app.delete("/app/v1/blog/comments/{comment_id}", status_code=204)
-    def delete_comment(comment_id: str) -> Response:
+    def delete_comment(
+        comment_id: str,
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/comments", "write")),
+    ) -> Response:
         use_cases.comment_deleter.execute(comment_id)
         return Response(status_code=204)
 
@@ -124,14 +183,23 @@ def blog_routes(app: FastAPI, use_cases: BlogUseCasesType) -> None:
         response_model=CategoryResponse,
         status_code=201,
     )
-    def create_category(payload: CategoryCreationDTO) -> CategoryResponse:
+    def create_category(
+        payload: CategoryCreationDTO,
+        _user: AuthenticatedUser = Depends(
+            require_authorization("/app/v1/blog/categories", "write")
+        ),
+    ) -> CategoryResponse:
         category = use_cases.category_creator.execute(
             name=payload.name,
         )
         return CategoryMapper.to_dto(category)
 
     @app.get("/app/v1/blog/categories", response_model=List[CategoryResponse])
-    def list_categories() -> List[CategoryResponse]:
+    def list_categories(
+        _user: AuthenticatedUser = Depends(
+            require_authorization("/app/v1/blog/categories", "read")
+        ),
+    ) -> List[CategoryResponse]:
         categories = use_cases.category_lister.execute()
         return [CategoryMapper.to_dto(category) for category in categories]
 
@@ -142,13 +210,18 @@ def blog_routes(app: FastAPI, use_cases: BlogUseCasesType) -> None:
         response_model=TagResponse,
         status_code=201,
     )
-    def create_tag(payload: TagCreationDTO) -> TagResponse:
+    def create_tag(
+        payload: TagCreationDTO,
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/tags", "write")),
+    ) -> TagResponse:
         tag = use_cases.tag_creator.execute(
             name=payload.name,
         )
         return TagMapper.to_dto(tag)
 
     @app.get("/app/v1/blog/tags", response_model=List[TagResponse])
-    def list_tags() -> List[TagResponse]:
+    def list_tags(
+        _user: AuthenticatedUser = Depends(require_authorization("/app/v1/blog/tags", "read")),
+    ) -> List[TagResponse]:
         tags = use_cases.tag_lister.execute()
         return [TagMapper.to_dto(tag) for tag in tags]

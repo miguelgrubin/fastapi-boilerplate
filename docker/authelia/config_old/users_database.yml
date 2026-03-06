@@ -1,0 +1,46 @@
+---
+# Authelia Users Database
+# https://www.authelia.com/reference/guides/passwords/
+#
+# This file contains user definitions for file-based authentication.
+# For production, consider using LDAP or a proper identity provider.
+#
+# To generate a new password hash, use:
+#   docker run authelia/authelia:latest authelia crypto hash generate argon2 --password 'your-password'
+#
+# Default user credentials:
+#   Username: admin
+#   Password: password
+#
+# IMPORTANT: Change these credentials for any non-development use!
+
+users:
+  admin:
+    displayname: "Admin User"
+    # Password: "password" (argon2id hash)
+    # Generated with: docker run authelia/authelia:latest authelia crypto hash generate argon2 --password 'password'
+    password: "$argon2id$v=19$m=65536,t=3,p=4$2HJR4gO3RG7jr+PJqpxEgQ$2sLb1/sowHH77bZ3Y6uE5UUfz76hs0jKtYWh8Ov2j0s"
+    email: admin@example.com
+    groups:
+      - admins
+      - users
+
+  # Example additional user (uncomment to use):
+  # developer:
+  #   displayname: "Developer User"
+  #   # Password: "developer"
+  #   password: "$argon2id$v=19$m=65536,t=3,p=4$BcQKJvgzZkPz2mPCdKWS5w$ZH0TiHzqxqJAVTqnrNVFhXUqNQVqjTnIZqghPPfiHxA"
+  #   email: developer@example.com
+  #   groups:
+  #     - developers
+  #     - users
+
+  # Example read-only user (uncomment to use):
+  # viewer:
+  #   displayname: "Viewer User"
+  #   # Password: "viewer"
+  #   password: "$argon2id$v=19$m=65536,t=3,p=4$BcQKJvgzZkPz2mPCdKWS5w$ZH0TiHzqxqJAVTqnrNVFhXUqNQVqjTnIZqghPPfiHxA"
+  #   email: viewer@example.com
+  #   groups:
+  #     - users
+...

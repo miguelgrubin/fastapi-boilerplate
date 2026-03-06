@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from src.blog.infrastructure.server.auth_routes import auth_routes
 from src.blog.infrastructure.server.error_handler import blog_error_handler
 from src.blog.infrastructure.server.router import blog_routes
 from src.blog.infrastructure.storage.article_repository_sql import ArticleRepositorySql
@@ -28,14 +29,30 @@ from src.blog.use_cases.tag_lister import TagLister
 from src.blog.use_cases.user_creator import UserCreator
 from src.blog.use_cases.user_deleter import UserDeleter
 from src.shared.domain.services.sql_service import SqlService
-from src.shared.factory import create_password_service, create_sql_service
+from src.shared.factory import (
+    create_authentication_service,
+    create_authorization_service,
+    create_password_service,
+    create_sql_service,
+)
 from src.shared.types import SharedServices
 
 
 def create_services(database_url: str) -> SharedServices:
+    from src.settings import settings
+
     return SharedServices(
         password_service=create_password_service("argon2"),
         sql_service=create_sql_service(database_url, metadata),
+        authentication_service=create_authentication_service(
+            client_id=settings.OIDC_CLIENT_ID,
+            client_secret=settings.OIDC_CLIENT_SECRET,
+            issuer_url=settings.OIDC_ISSUER_URL,
+        ),
+        authorization_service=create_authorization_service(
+            model_path=settings.CASBIN_MODEL_PATH,
+            policy_path=settings.CASBIN_POLICY_PATH,
+        ),
     )
 
 
@@ -107,9 +124,10 @@ def create_use_cases(
 
 
 def create_blog_http_server(app: FastAPI) -> None:
-    _, __, use_cases = create_blog_module()
+    services, _, use_cases = create_blog_module()
     blog_error_handler(app)
-    blog_routes(app, use_cases)
+    auth_routes(app, services.authentication_service)
+    blog_routes(app, use_cases, services.authentication_service, services.authorization_service)
 
 
 def create_blog_module() -> tuple[SharedServices, BlogRepositoriesType, BlogUseCasesType]:

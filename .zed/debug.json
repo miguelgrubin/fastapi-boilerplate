@@ -1,0 +1,27 @@
+[
+  {
+    "label": "FastAPI: Attach to Remote Debugger (0.0.0.0:5678)",
+    "adapter": "Debugpy",
+    "request": "attach",
+    "connect": {
+      "host": "0.0.0.0",
+      "port": 5678
+    }
+  },
+  {
+    "label": "Python: Active File",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_FILE}",
+    "cwd": "${ZED_WORKTREE_ROOT}"
+  },
+  {
+    "label": "Python: pytest",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "-m",
+    "args": ["pytest", "tests/", "-v", "-s"],
+    "cwd": "${ZED_WORKTREE_ROOT}",
+    "console": "integratedTerminal"
+  }
+]

@@ -1,0 +1,38 @@
+# RBAC
+
+- Roles
+  - `Anyone` - unauthenticated visitor
+  - `User` - authenticated user (Authelia group: `users`)
+  - `Admin` - administrator (Authelia group: `admins`)
+- Authentication
+  - `Anyone` can initiate OIDC login via Authelia
+  - `Anyone` can complete OIDC callback
+  - `User` can retrieve its own session info
+  - `User` can logout
+- Users
+  - `Anyone` can register a new `User`
+  - `Admin` can delete a `User`
+- Articles
+  - `Anyone` can list all `Articles`
+  - `Anyone` can read one `Article` by id
+  - `Anyone` can read one `Article` by slug
+  - `User` can create an `Article`
+  - `User` can update its own `Articles`
+  - `User` can delete its own `Articles`
+  - `User` can publish an `Article`
+  - `User` can unpublish an `Article`
+  - `Admin` can update any `Article`
+  - `Admin` can delete any `Article`
+  - `Admin` can publish any `Article`
+  - `Admin` can unpublish any `Article`
+- Comments
+  - `Anyone` can list all `Comments` on an `Article`
+  - `User` can create a `Comment` on any `Article`
+  - `User` can delete its own `Comments`
+  - `Admin` can delete any `Comment`
+- Categories
+  - `Anyone` can list all `Categories`
+  - `Admin` can create a `Category`
+- Tags
+  - `Anyone` can list all `Tags`
+  - `Admin` can create a `Tag`

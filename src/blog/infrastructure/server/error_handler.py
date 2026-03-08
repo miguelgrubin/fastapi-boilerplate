@@ -9,6 +9,8 @@ from src.blog.domain.errors.tag_not_found import TagNotFound
 from src.blog.domain.errors.user_already_exists import UserAlreadyExists
 from src.blog.domain.errors.user_not_following import UserNotFollowing
 from src.blog.domain.errors.user_not_found import UserNotFound
+from src.shared.domain.errors.forbidden import Forbidden
+from src.shared.domain.errors.unauthorized import Unauthorized
 
 
 def blog_error_handler(app: FastAPI) -> None:
@@ -72,5 +74,19 @@ def blog_error_handler(app: FastAPI) -> None:
     async def tag_already_exists_exception_handler(request, exc):
         return JSONResponse(
             status_code=400,
+            content={"detail": str(exc)},
+        )
+
+    @app.exception_handler(Unauthorized)
+    async def unauthorized_exception_handler(request, exc):
+        return JSONResponse(
+            status_code=401,
+            content={"detail": str(exc)},
+        )
+
+    @app.exception_handler(Forbidden)
+    async def forbidden_exception_handler(request, exc):
+        return JSONResponse(
+            status_code=403,
             content={"detail": str(exc)},
         )

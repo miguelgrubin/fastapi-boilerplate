@@ -26,12 +26,6 @@
 | `make lint` | Run pylint on source code |
 | `make typecheck` | Run ty type checker on `src/` |
 
-### Debugging
-
-| Command | Description |
-|---------|-------------|
-| `make start-debug` | Start app with debugpy enabled on `0.0.0.0:5678` for editor attachment |
-
 
 ### Testing
 

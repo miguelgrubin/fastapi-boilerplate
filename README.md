@@ -86,6 +86,7 @@
 
 | Command | Description |
 |---------|-------------|
+| `make jwkspem` | Generate RSA private key for Authelia OIDC JWT signing |
 | `make certs` | Generate local TLS certificates with mkcert |
 | `make clean` | Remove all build artifacts, caches, and temporary files |
 
@@ -128,17 +129,22 @@ docker compose --env-file .env.docker down -v
 
 ### Initial Setup
 
-1. **Start the stack:**
+1. **Generate the OIDC signing key (required once):**
+   ```bash
+   make jwkspem
+   ```
+
+2. **Start the stack:**
    ```bash
    docker compose --env-file .env.docker up -d
    ```
 
-2. **Wait for services to be healthy:**
+3. **Wait for services to be healthy:**
    ```bash
    docker compose --env-file .env.docker ps
    ```
 
-3. **Access the services** (see table below)
+4. **Access the services** (see table below)
 
 ### Access URLs
 

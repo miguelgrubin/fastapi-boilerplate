@@ -122,6 +122,10 @@ docker-redis-connect:
 docker-app-shell:
 	docker compose -f compose.dev.yml exec app /bin/sh
 
+.PHONY: jwkspem
+jwkspem:
+	openssl genpkey -algorithm RSA -out docker/authelia/secrets/oidc_jwks_rsa_private.pem -pkeyopt rsa_keygen_bits:4096
+
 .PHONY: clean
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
@@ -169,5 +173,6 @@ help:
 	@echo "  make docker-app-shell     Shell into app container"
 	@echo ""
 	@echo "Utilities:"
+	@echo "  make jwkspem              Generate RSA key for Authelia OIDC"
 	@echo "  make clean                Remove cache files"
 	@echo "  make help                 Show this help"

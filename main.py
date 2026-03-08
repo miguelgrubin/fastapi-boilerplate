@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import typer
@@ -8,8 +9,25 @@ from src.settings import settings
 app = typer.Typer()
 
 
+def _init_debugger() -> None:
+    """Initialize debugpy if DEBUG environment variable is set."""
+    if os.getenv("DEBUG", "false").lower() == "true":
+        try:
+            import debugpy
+
+            debugpy.listen(("0.0.0.0", 5678))
+            print("⏸️  Debugger listening on 0.0.0.0:5678")
+            print("   Connect your IDE debugger to proceed...")
+            # Uncomment the line below if you want to wait for debugger
+            # before starting the application
+            # debugpy.wait_for_client()
+        except ImportError:
+            print("⚠️  DEBUG=true but debugpy not installed. Run: uv pip install debugpy")
+
+
 @app.command()
-def http_server():
+def http_server() -> None:
+    """Start the HTTP server."""
     print("Starting HTTP server...")
     uvicorn.run(
         "src.http_server:app",
@@ -21,7 +39,8 @@ def http_server():
 
 
 @app.command()
-def export_openapi():
+def export_openapi() -> None:
+    """Export OpenAPI schema to YAML file."""
     from src.http_server import app as fastapi_app
 
     schema = fastapi_app.openapi()
@@ -32,9 +51,11 @@ def export_openapi():
 
 
 @app.command()
-def mcp_server():
+def mcp_server() -> None:
+    """Start the MCP server."""
     print("Starting MCP server...")
 
 
 if __name__ == "__main__":
+    _init_debugger()
     app()

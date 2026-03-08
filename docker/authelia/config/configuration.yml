@@ -108,15 +108,17 @@ notifier:
 # Authelia acts as the Identity Provider (IdP) for the FastAPI app
 identity_providers:
   oidc:
-    hmac_secret: ${AUTHELIA_OIDC_HMAC_SECRET}
     jwks:
       - key: {{ secret "/secrets/oidc_jwks_rsa_private.pem" | mindent 10 "|" }}
     clients:
       - client_id: 'fastapi-blog'
         client_name: 'FastAPI Blog'
         client_secret: '$plaintext$39cee665c2ccd173ddb4c015a8d3c9f0c8ac44ef20f0fdab14b93c29bce9e7bd'
+        authorization_policy: 'one_factor'
         redirect_uris:
           - 'https://blog.localtest.me/auth/callback'
+          - 'http://localhost:8000/auth/callback'
+          - 'http://0.0.0.0:8000/auth/callback'
         scopes:
           - 'openid'
           - 'profile'

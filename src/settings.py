@@ -14,6 +14,7 @@ class ServerSettings(BaseSettings):
     OIDC_CLIENT_ID: str = ""
     OIDC_CLIENT_SECRET: str = ""
     OIDC_ISSUER_URL: str = ""
+    OIDC_VERIFY_SSL: bool = True
 
     # Session
     SESSION_SECRET_KEY: str = "change-me-to-a-random-secret"

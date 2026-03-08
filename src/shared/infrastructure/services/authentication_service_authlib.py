@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from authlib.integrations.starlette_client import OAuth
@@ -6,6 +7,8 @@ from src.shared.domain.services.authentication_service import AuthenticationServ
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
+logger = logging.getLogger(__name__)
+
 
 class AuthenticationServiceAuthlib(AuthenticationService):
     def __init__(
@@ -13,14 +16,21 @@ class AuthenticationServiceAuthlib(AuthenticationService):
         client_id: str,
         client_secret: str,
         issuer_url: str,
+        verify_ssl: bool = True,
     ) -> None:
         self._oauth = OAuth()
+        client_kwargs: dict[str, object] = {
+            "scope": "openid profile email groups",
+            "token_endpoint_auth_method": "client_secret_post",
+        }
+        if not verify_ssl:
+            client_kwargs["verify"] = False
         self._oauth.register(
             name="authelia",
             client_id=client_id,
             client_secret=client_secret,
             server_metadata_url=f"{issuer_url}/.well-known/openid-configuration",
-            client_kwargs={"scope": "openid profile email groups"},
+            client_kwargs=client_kwargs,
         )
 
     async def get_login_redirect(self, request: Request) -> RedirectResponse:
@@ -29,7 +39,23 @@ class AuthenticationServiceAuthlib(AuthenticationService):
 
     async def handle_callback(self, request: Request) -> AuthenticatedUser:
         token = await self._oauth.authelia.authorize_access_token(request)
-        userinfo = token.get("userinfo", {})
+
+        # Try userinfo from token response first, then explicit endpoint call,
+        # then fall back to ID token claims
+        userinfo = token.get("userinfo")
+        if not userinfo or not userinfo.get("preferred_username"):
+            logger.debug("Token userinfo missing or incomplete, calling userinfo endpoint")
+            try:
+                userinfo = await self._oauth.authelia.userinfo(token=token)
+            except Exception:
+                logger.warning("Userinfo endpoint call failed", exc_info=True)
+                userinfo = None
+
+        if not userinfo or not userinfo.get("preferred_username"):
+            logger.debug("Userinfo still missing, falling back to ID token claims")
+            userinfo = dict(token)
+
+        logger.debug("Final userinfo keys: %s", list(userinfo.keys()) if userinfo else None)
 
         user = AuthenticatedUser(
             sub=userinfo.get("sub", ""),

@@ -35,12 +35,14 @@ def create_authentication_service(
     client_id: str,
     client_secret: str,
     issuer_url: str,
+    verify_ssl: bool = True,
 ) -> AuthenticationService:
     if client_id and client_secret and issuer_url:
         return AuthenticationServiceAuthlib(
             client_id=client_id,
             client_secret=client_secret,
             issuer_url=issuer_url,
+            verify_ssl=verify_ssl,
         )
     return AuthenticationServiceFake()
 

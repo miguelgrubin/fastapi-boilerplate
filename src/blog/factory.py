@@ -48,6 +48,7 @@ def create_services(database_url: str) -> SharedServices:
             client_id=settings.OIDC_CLIENT_ID,
             client_secret=settings.OIDC_CLIENT_SECRET,
             issuer_url=settings.OIDC_ISSUER_URL,
+            verify_ssl=settings.OIDC_VERIFY_SSL,
         ),
         authorization_service=create_authorization_service(
             model_path=settings.CASBIN_MODEL_PATH,

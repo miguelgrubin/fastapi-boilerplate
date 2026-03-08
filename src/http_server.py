@@ -6,7 +6,7 @@ from src.settings import settings
 
 app = FastAPI()
 
-app.add_middleware(SessionMiddleware, secret_key=settings.SESSION_SECRET_KEY)
+app.add_middleware(SessionMiddleware, secret_key=settings.SESSION_SECRET_KEY)  # ty: ignore[invalid-argument-type]
 
 
 @app.get("/checkhealth")

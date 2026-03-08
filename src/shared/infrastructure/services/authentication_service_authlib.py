@@ -1,5 +1,6 @@
-import logging
 from typing import Optional
+
+import logging
 
 from authlib.integrations.starlette_client import OAuth
 from src.shared.domain.authenticated_user import AuthenticatedUser

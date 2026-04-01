@@ -10,7 +10,7 @@ Implement Retrieval-Augmented Generation (RAG) capabilities using pgvector for s
 - **pgvector**: PostgreSQL extension for vector similarity search
 - **langchain-postgres**: Provides `PGVectorStore` for database integration
 - **langchain-core**: Core abstractions for embeddings and LLM interactions
-- **langchain-cohere**: Cohere embeddings provider (or alternative embedding service)
+- **langchain-ollama**: ollama embeddings provider (or alternative embedding service)
 - **SQLAlchemy**: ORM for database operations
 
 ## Architecture
@@ -22,7 +22,7 @@ Implement Retrieval-Augmented Generation (RAG) capabilities using pgvector for s
 │                                                           │
 │  ┌──────────────────────────────────────────────────┐   │
 │  │        Embedding Service (LangChain)            │   │
-│  │  - Cohere Embeddings (or alternative)           │   │
+│  │  - ollama Embeddings (or alternative)           │   │
 │  │  - Lazy loading via dependency injection        │   │
 │  └──────────────────────────────────────────────────┘   │
 │                           │                               │
@@ -90,7 +90,7 @@ Implement Retrieval-Augmented Generation (RAG) capabilities using pgvector for s
 #### 2.1 Create Embedding Service
 - New module: `src/shared/infrastructure/embeddings/embedding_service.py`
 - Abstraction: Define `EmbeddingService` interface in domain layer
-- Implementation: Wrap LangChain `Embeddings` with Cohere provider
+- Implementation: Wrap LangChain `Embeddings` with ollama provider
 - Handle API errors and rate limiting
 
 **Responsibilities**:
@@ -107,9 +107,8 @@ class EmbeddingService(ABC):
 
 #### 2.2 Configure Embeddings
 - Add configuration in `src/config.py`:
-  - `COHERE_API_KEY` (from environment)
-  - `EMBEDDING_MODEL` (default: "embed-english-v3.0")
-  - `EMBEDDING_DIMENSION` (1536 for Cohere)
+  - `EMBEDDING_MODEL` (default: "llama3")
+  - `EMBEDDING_DIMENSION` (1536 for ollama)
 - Add `.env` entry for configuration
 
 ### Phase 3: Vector Store Integration

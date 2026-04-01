@@ -2,6 +2,7 @@ from sqlalchemy import MetaData
 
 from src.shared.domain.services.authentication_service import AuthenticationService
 from src.shared.domain.services.authorization_service import AuthorizationService
+from src.shared.domain.services.embedding_service import EmbeddingService
 from src.shared.domain.services.password_service import PasswordService
 from src.shared.domain.services.sql_service import SqlService
 from src.shared.infrastructure.services.authentication_service_authlib import (
@@ -14,6 +15,12 @@ from src.shared.infrastructure.services.authorization_service_casbin import (
     AuthorizationServiceCasbin,
 )
 from src.shared.infrastructure.services.authorization_service_fake import AuthorizationServiceFake
+from src.shared.infrastructure.services.embedding_service_fake import (
+    EmbeddingServiceFake,
+)
+from src.shared.infrastructure.services.embedding_service_ollama import (
+    EmbeddingServiceOllama,
+)
 from src.shared.infrastructure.services.password_service_argon import PasswordServiceArgon
 from src.shared.infrastructure.services.password_service_fake import PasswordServiceFake
 from src.shared.infrastructure.services.sql_service_sqlalchemy import SqlServiceSqlAlchemy
@@ -57,3 +64,27 @@ def create_authorization_service(
             policy_path=policy_path,
         )
     return AuthorizationServiceFake()
+
+
+def create_embedding_service(
+    enabled: bool = False,
+    model: str = "llama3",
+    dimension: int = 1536,
+) -> EmbeddingService:
+    """Create an embedding service based on configuration.
+
+    Args:
+        enabled: Whether to enable embeddings. If False, returns fake service.
+        model: ollama model name.
+        dimension: Embedding vector dimension.
+
+    Returns:
+        An EmbeddingService implementation.
+
+    Raises:
+        ValueError: If enabled=True but api_key is empty.
+    """
+    if not enabled:
+        return EmbeddingServiceFake(dimension=dimension)
+
+    return EmbeddingServiceOllama(model=model)

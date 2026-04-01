@@ -1,16 +1,15 @@
 """Tests for embedding service implementations."""
 
 import pytest
-
 from src.shared.domain.services.embedding_service import (
     EmbeddingService,
     EmbeddingServiceError,
 )
-from src.shared.infrastructure.services.embedding_service_fake import (
-    EmbeddingServiceFake,
-)
 from src.shared.infrastructure.services.embedding_service_factory import (
     create_embedding_service,
+)
+from src.shared.infrastructure.services.embedding_service_fake import (
+    EmbeddingServiceFake,
 )
 
 

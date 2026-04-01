@@ -10,6 +10,8 @@ To add a new table:
     4. Run: make migrate
 """
 
+from typing import Optional
+
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -20,6 +22,12 @@ from sqlalchemy import (
     String,
     Table,
 )
+
+Vector: Optional[type] = None
+try:
+    from pgvector.sqlalchemy import Vector  # type: ignore[import-not-found]  # noqa: F811
+except ImportError:
+    pass
 
 metadata = MetaData()
 
@@ -67,6 +75,9 @@ articles_table = Table(
     Column("author_id", String, ForeignKey("users.id"), nullable=False),
     Column("published", Boolean, nullable=False, server_default="false"),
     Column("category_id", String, ForeignKey("categories.id"), nullable=True),
+    Column("embedding", Vector(1536), nullable=True)
+    if Vector
+    else Column("embedding", String, nullable=True),
     Column("created_at", DateTime, nullable=False),
     Column("updated_at", DateTime, nullable=False),
 )
@@ -85,6 +96,9 @@ comments_table = Table(
     Column("content", String, nullable=False),
     Column("author_id", String, ForeignKey("users.id"), nullable=False),
     Column("article_id", String, ForeignKey("articles.id"), nullable=False),
+    Column("embedding", Vector(1536), nullable=True)
+    if Vector
+    else Column("embedding", String, nullable=True),
     Column("created_at", DateTime, nullable=False),
     Column("updated_at", DateTime, nullable=False),
 )

@@ -38,6 +38,15 @@ dev = [
   "mkdocs-material",
 ]
 
+rag = [
+  "langchain>=0.1.0",
+  "langchain-core>=0.1.0",
+  "langchain-postgres>=0.0.17",
+  "langchain-cohere>=0.0.1",
+  "cohere>=4.0.0",
+  "pgvector>=0.1.0",
+]
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"

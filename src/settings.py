@@ -23,6 +23,13 @@ class ServerSettings(BaseSettings):
     CASBIN_MODEL_PATH: str = str(Path(__file__).parent / "config" / "casbin_model.conf")
     CASBIN_POLICY_PATH: str = str(Path(__file__).parent / "config" / "casbin_policy.conf")
 
+    # RAG/Vector Search Configuration
+    EMBEDDINGS_ENABLED: bool = False
+    COHERE_API_KEY: str = ""
+    EMBEDDING_MODEL: str = "embed-english-v3.0"
+    EMBEDDING_DIMENSION: int = 1536
+    SIMILARITY_THRESHOLD: float = 0.5
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

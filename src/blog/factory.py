@@ -28,10 +28,12 @@ from src.blog.use_cases.tag_creator import TagCreator
 from src.blog.use_cases.tag_lister import TagLister
 from src.blog.use_cases.user_creator import UserCreator
 from src.blog.use_cases.user_deleter import UserDeleter
+from src.shared.domain.services.embedding_service import EmbeddingService
 from src.shared.domain.services.sql_service import SqlService
 from src.shared.factory import (
     create_authentication_service,
     create_authorization_service,
+    create_embedding_service,
     create_password_service,
     create_sql_service,
 )
@@ -54,14 +56,22 @@ def create_services(database_url: str) -> SharedServices:
             model_path=settings.CASBIN_MODEL_PATH,
             policy_path=settings.CASBIN_POLICY_PATH,
         ),
+        embedding_service=create_embedding_service(
+            enabled=settings.EMBEDDINGS_ENABLED,
+            model=settings.EMBEDDING_MODEL,
+            dimension=settings.EMBEDDING_DIMENSION,
+        ),
     )
 
 
-def create_repositories(sql_service: SqlService) -> BlogRepositoriesType:
+def create_repositories(
+    sql_service: SqlService,
+    embedding_service: EmbeddingService,
+) -> BlogRepositoriesType:
     return BlogRepositoriesType(
         user_repository=UserRepositorySql(sql_service),
-        article_repository=ArticleRepositorySql(sql_service),
-        comment_repository=CommentRepositorySql(sql_service),
+        article_repository=ArticleRepositorySql(sql_service, embedding_service),
+        comment_repository=CommentRepositorySql(sql_service, embedding_service),
         category_repository=CategoryRepositorySql(sql_service),
         tag_repository=TagRepositorySql(sql_service),
     )
@@ -136,6 +146,6 @@ def create_blog_module() -> tuple[SharedServices, BlogRepositoriesType, BlogUseC
 
     database_url = str(settings.DATABASE_URL)
     services = create_services(database_url)
-    repositories = create_repositories(services.sql_service)
+    repositories = create_repositories(services.sql_service, services.embedding_service)
     use_cases = create_use_cases(repositories, services)
     return services, repositories, use_cases

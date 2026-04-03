@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 
 from src.blog.domain.article import Article
 from src.blog.domain.article_repository import ArticleRepository
+from src.shared.domain.services.embedding_service import EmbeddingServiceError
 
 
 @dataclass
@@ -31,6 +32,14 @@ class ArticleRepositoryMemory(ArticleRepository):
 
     def find_by_slug(self, slug: str) -> Optional[Article]:
         return next(filter(lambda x: x.slug == slug, self._articles), None)
+
+    def similarity_search(
+        self,
+        query: str,
+        top_k: int = 5,
+        score_threshold: float = 0.0,
+    ) -> List[Tuple[Article, float]]:
+        raise EmbeddingServiceError("Semantic search not supported in memory repository")
 
     def clear(self) -> None:
         self._articles = []

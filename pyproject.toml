@@ -20,6 +20,11 @@ dependencies = [
   "httpx",
   "casbin",
   "itsdangerous",
+  "langchain>=0.1.0",
+  "langchain-core>=0.1.0",
+  "langchain-postgres>=0.0.17",
+  "langchain-ollama>=0.0.1",
+  "pgvector>=0.1.0",
 ]
 
 [project.optional-dependencies]

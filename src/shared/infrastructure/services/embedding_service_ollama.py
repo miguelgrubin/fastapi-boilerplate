@@ -6,13 +6,13 @@ from src.shared.domain.services.embedding_service import (
 
 
 class EmbeddingServiceOllama(EmbeddingService):
-    """Embedding service implementation using Cohere API."""
+    """Embedding service implementation using Ollama API."""
 
     def __init__(
         self,
         model: str = "llama3",
     ) -> None:
-        """Initialize Cohere embedding service.
+        """Initialize Ollama embedding service.
 
         Args:
             model: Model name (default: llama3)

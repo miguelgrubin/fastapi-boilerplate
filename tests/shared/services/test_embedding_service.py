@@ -1,15 +1,14 @@
 """Tests for embedding service implementations."""
 
-import pytest
 from src.shared.domain.services.embedding_service import (
     EmbeddingService,
-    EmbeddingServiceError,
 )
-from src.shared.infrastructure.services.embedding_service_factory import (
-    create_embedding_service,
-)
+from src.shared.factory import create_embedding_service
 from src.shared.infrastructure.services.embedding_service_fake import (
     EmbeddingServiceFake,
+)
+from src.shared.infrastructure.services.embedding_service_ollama import (
+    EmbeddingServiceOllama,
 )
 
 
@@ -88,11 +87,6 @@ class TestEmbeddingServiceFactory:
 
         assert isinstance(service, EmbeddingServiceFake)
 
-    def test_raises_error_when_enabled_without_api_key(self) -> None:
-        """Test that factory raises error when enabled without API key."""
-        with pytest.raises(ValueError, match="COHERE_API_KEY is required"):
-            create_embedding_service(enabled=True, api_key="")
-
     def test_respects_custom_dimension(self) -> None:
         """Test that factory respects custom dimension."""
         service = create_embedding_service(enabled=False, dimension=512)
@@ -100,16 +94,11 @@ class TestEmbeddingServiceFactory:
         vector = service.embed_text("test")
         assert len(vector) == 512
 
-    def test_creates_cohere_service_when_enabled_with_api_key(self) -> None:
-        """Test that factory creates Cohere service when enabled with API key."""
-        # This test will fail if cohere library is not installed,
-        # but that's expected behavior
-        try:
-            service = create_embedding_service(enabled=True, api_key="test-key-12345")
-            # Check that it's the Cohere implementation
-            assert hasattr(service, "_client")
-        except ImportError:
-            pytest.skip("cohere library not installed")
+    def test_creates_ollama_service_when_enabled(self) -> None:
+        """Test that factory creates ollama service when enabled."""
+        service = create_embedding_service(enabled=True)
+
+        assert isinstance(service, EmbeddingServiceOllama)
 
 
 class TestEmbeddingServiceInterface:

@@ -10,7 +10,7 @@ To add a new table:
     4. Run: make migrate
 """
 
-from pgvector.sqlalchemy import Vector  # type: ignore[import-not-found]  # noqa: F811
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     JSON,
     Boolean,

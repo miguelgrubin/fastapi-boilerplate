@@ -29,3 +29,25 @@ class ArticleRepository(ABC):
         self, find_filters: Dict, find_order: Dict, find_limits: Tuple[int, int]
     ) -> List[Article]:
         raise NotImplementedError
+
+    @abstractmethod
+    def similarity_search(
+        self,
+        query: str,
+        top_k: int = 5,
+        score_threshold: float = 0.0,
+    ) -> List[Tuple[Article, float]]:
+        """Search articles by semantic similarity.
+
+        Args:
+            query: Search query text
+            top_k: Number of results to return
+            score_threshold: Minimum similarity score (0-1)
+
+        Returns:
+            List of (Article, similarity_score) tuples, ordered by relevance
+
+        Raises:
+            EmbeddingServiceError: If embedding generation fails
+        """
+        raise NotImplementedError

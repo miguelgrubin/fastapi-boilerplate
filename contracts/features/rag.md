@@ -273,7 +273,7 @@ class SearchCommentsUseCase:
 ### Phase 6: Testing & Validation
 
 #### 6.1 Unit Tests
-- Test embedding service with mock Cohere API
+- Test embedding service with mock Ollama API
 - Test vector store creation and configuration
 - Test similarity_search() methods with mock embeddings
 - Test embedding caching and batching
@@ -303,8 +303,7 @@ rag = [
     "langchain>=0.2.0",
     "langchain-core>=0.2.0",
     "langchain-postgres>=0.1.0",
-    "langchain-cohere>=0.1.0",
-    "cohere>=5.0.0",
+    "langchain-ollama>=0.1.0",
     "pgvector>=0.1.0",
     "sqlalchemy>=2.0.0",
 ]
@@ -322,10 +321,6 @@ class Settings(BaseSettings):
     EMBEDDINGS_ENABLED: bool = Field(
         default=False,
         description="Enable embeddings and vector search"
-    )
-    COHERE_API_KEY: str = Field(
-        default="",
-        description="Cohere API key for embeddings"
     )
     EMBEDDING_MODEL: str = Field(
         default="embed-english-v3.0",
@@ -377,7 +372,7 @@ class Settings(BaseSettings):
 ## Error Handling
 
 ### Embedding Service Errors
-- Cohere API timeout → Fallback to keyword search
+- Ollama API timeout → Fallback to keyword search
 - Rate limiting → Queue and retry with backoff
 - Invalid API key → Log error, disable embeddings
 
@@ -392,7 +387,7 @@ class Settings(BaseSettings):
 - Embedding generation latency
 - Similarity search latency (p50, p95, p99)
 - Cache hit rate for embeddings
-- Cohere API error rate and quota usage
+- Ollama API error rate and quota usage
 
 ### Logs to Capture
 - Embedding generation requests/responses
@@ -416,4 +411,3 @@ class Settings(BaseSettings):
 - [pgvector Documentation](https://github.com/pgvector/pgvector)
 - [LangChain Documentation](https://python.langchain.com/)
 - [LangChain PostgreSQL Integration](https://python.langchain.com/docs/integrations/vectorstores/pgvector)
-- [Cohere Embeddings API](https://docs.cohere.com/reference/embed)

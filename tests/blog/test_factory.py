@@ -1,11 +1,9 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from src.blog.factory import (
     create_repositories,
-    create_use_cases,
     create_services,
+    create_use_cases,
 )
 from src.blog.types import BlogRepositoriesType, BlogUseCasesType
 from src.shared.types import SharedServices
